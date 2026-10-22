@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>De la utilidad al asombro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,600;1,6..96,500&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: un paso por pantalla (tarjeta central ~42rem) con barra de progreso fija arriba; eje de color de lo útil (pizarra) al asombro (oro), con un tercer tono para el «depende». */
+:root{
+  --bg:#eef1f5;
+  --card:#ffffff;
+  --ink:#18202e;
+  --muted:#5b6577;
+  --line:#d6dce6;
+  --util:#3f6187;
+  --util-soft:#e3ebf4;
+  --wonder:#a06a08;
+  --wonder-soft:#fbf0d9;
+  --dep:#2f7a64;
+  --dep-soft:#dff1ea;
+  --ok:#2f7a3e;
+  --bad:#b0402f;
+  --display:"Bodoni Moda","Didot",Georgia,serif;
+  --body:"Atkinson Hyperlegible","Verdana","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131a;--card:#181e29;--ink:#e8ebf1;--muted:#9ba5b7;--line:#2b3342;
+    --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;
+    --dep:#6fcfae;--dep-soft:#15302a;--ok:#7fd18f;--bad:#f0907e;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f131a;--card:#181e29;--ink:#e8ebf1;--muted:#9ba5b7;--line:#2b3342;
+  --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;
+  --dep:#6fcfae;--dep-soft:#15302a;--ok:#7fd18f;--bad:#f0907e;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.12rem;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 3rem}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--wonder);outline-offset:3px;border-radius:6px}
+.wrap{max-width:42rem;margin-inline:auto}
+
+/* Barra superior */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:.9rem .7rem;display:grid;gap:.55rem}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem}
+.brand{font-family:var(--display);font-style:italic;font-size:1.1rem;white-space:nowrap}
+.brand b{font-style:normal;color:var(--util)} .brand i{color:var(--wonder)}
+.count{font-family:var(--mono);font-size:.78rem;color:var(--muted);white-space:nowrap}
+.dots{display:flex;gap:5px}
+.dots button{flex:1;height:8px;border-radius:4px;border:0;background:var(--line);padding:0}
+.dots button.done{background:linear-gradient(90deg,var(--util),var(--wonder))}
+.dots button.now{background:var(--ink)}
+
+/* Tarjeta */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem 1.25rem;margin-top:.6rem;min-height:24rem;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:1.1rem;width:100%}
+.card>*{min-width:0}
+@media (min-width:600px){.card{padding:2rem 2.2rem}}
+.kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1,h2{font-family:var(--display);font-weight:600;line-height:1.12;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.2rem,8vw,3.3rem)}
+h2{font-size:clamp(1.6rem,5.5vw,2.2rem)}
+h1 .u,h2 .u{color:var(--util)} h1 .w,h2 .w{color:var(--wonder)} h2 .d{color:var(--dep)}
+p{margin:0}
+.big{font-size:1.25rem}
+.muted{color:var(--muted)}
+.hl-u{background:var(--util-soft);color:var(--util);padding:0 .3em;border-radius:4px;font-weight:700}
+.hl-w{background:var(--wonder-soft);color:var(--wonder);padding:0 .3em;border-radius:4px;font-weight:700}
+.hl-d{background:var(--dep-soft);color:var(--dep);padding:0 .3em;border-radius:4px;font-weight:700}
+.de{font-family:var(--mono);font-size:.82em;color:var(--muted)}
+.tip{position:relative;display:block;background:var(--bg);border-radius:12px;padding:.85rem 1rem .85rem 2.1rem;font-size:1.02rem;line-height:1.55}
+.tip::before{content:"";position:absolute;left:.95rem;top:1.35rem;width:9px;height:9px;border-radius:50%;background:var(--wonder)}
+details{border-top:1px dashed var(--line);padding-top:.8rem}
+summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.98rem}
+details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
+
+/* Botones y chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.5rem 1rem;font-weight:700;font-size:1rem}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.btn{border:0;border-radius:12px;padding:.8rem 1.3rem;font-weight:700;background:var(--ink);color:var(--card)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{background:transparent;color:var(--muted);border:2px dashed var(--line);cursor:default}
+.btn.wide{width:100%}
+.nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:1rem}
+.nav .btn{min-width:8rem}
+
+/* Paso 1: dos caras */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.side{border-radius:14px;padding:1rem;display:grid;gap:.3rem;min-width:0}
+.side.u{background:var(--util-soft)} .side.w{background:var(--wonder-soft)}
+.side strong{font-size:1.25rem} .side.u strong{color:var(--util)} .side.w strong{color:var(--wonder)}
+.side span{font-size:.95rem;color:var(--muted)}
+@media (max-width:420px){.duo{grid-template-columns:1fr}}
+.answer{border-radius:12px;padding:.9rem 1rem;font-size:1.05rem;border-left:5px solid var(--line);background:var(--bg);min-height:3.4rem}
+.answer.u{border-color:var(--util)} .answer.w{border-color:var(--wonder)} .answer.d{border-color:var(--dep)}
+.answer.ok{border-color:var(--ok)} .answer.bad{border-color:var(--bad)}
+
+/* Paso 2: estatua */
+.statue-box{display:grid;place-items:center;background:var(--bg);border-radius:14px;padding:1rem}
+.statue-box svg{width:160px;height:auto;max-width:100%}
+.piece{transition:transform .6s ease, opacity .6s}
+.broken .p1{transform:translate(-26px,40px) rotate(-25deg)}
+.broken .p2{transform:translate(30px,52px) rotate(30deg)}
+.broken .p3{transform:translate(-8px,70px) rotate(12deg)}
+.glow{transition:opacity .6s}
+@media (prefers-reduced-motion:reduce){.piece,.glow{transition:none}}
+
+/* Paso 4: escalera */
+.ladder{display:grid;gap:.45rem}
+.rung{display:flex;justify-content:space-between;align-items:center;gap:.8rem;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem 1rem}
+.rung .n{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.rung[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.rung.s4{border-left:8px solid var(--wonder)}
+.rung.s3{border-left:8px solid color-mix(in srgb,var(--wonder) 65%,var(--util))}
+.rung.s2{border-left:8px solid color-mix(in srgb,var(--wonder) 35%,var(--util))}
+.rung.s1{border-left:8px solid var(--util)}
+.rung.s0{border-style:dashed;background:var(--util-soft)}
+
+/* Paso 5: criterios */
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.7rem}
+.flip{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.9rem;text-align:left;display:grid;gap:.35rem;min-height:8.5rem;align-content:start}
+.flip strong{font-size:1.1rem}
+.flip .q{color:var(--muted);font-size:.95rem}
+.flip .back{display:grid;gap:.35rem;font-size:.95rem}
+.flip.on{border-color:var(--wonder)}
+.flip .tag{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+
+/* Paso 6: Hartmann */
+.tower{display:grid;gap:4px}
+.floor{display:grid;grid-template-columns:7.5rem 1fr 1fr;gap:.6rem;align-items:center;font-size:.92rem}
+.floor .lab{font-weight:700}
+.meterbar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.meterbar i{display:block;height:100%;border-radius:7px}
+.f-str i{background:var(--util)} .f-hi i{background:var(--wonder)}
+.tower-head{display:grid;grid-template-columns:7.5rem 1fr 1fr;gap:.6rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:420px){.floor,.tower-head{grid-template-columns:5.5rem 1fr 1fr}}
+
+/* Paso 7: miradas */
+.switch{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:14px;padding:4px;gap:4px}
+.switch button{border:0;background:transparent;border-radius:11px;padding:.6rem .5rem;font-weight:700;line-height:1.25}
+.switch button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.scene{border-radius:14px;padding:1.1rem;display:grid;gap:.5rem;transition:background .4s}
+.scene.u{background:var(--util-soft)} .scene.w{background:var(--wonder-soft)}
+.scene ul{margin:0;padding-left:1.2rem;display:grid;gap:.3rem}
+.scene.u li::marker{color:var(--util)} .scene.w li::marker{color:var(--wonder)}
+.voices{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.6rem}
+.voice{border:1px solid var(--line);border-radius:12px;padding:.75rem .9rem;font-size:.96rem;display:grid;gap:.2rem}
+.voice b{font-family:var(--display);font-size:1.1rem}
+
+/* Paso 8: juego */
+.game-item{font-family:var(--display);font-size:clamp(1.6rem,6vw,2.1rem);text-align:center;padding:1rem 0 .4rem}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.choices button{border:2px solid var(--line);border-radius:12px;padding:.8rem .4rem;font-weight:700;background:var(--card)}
+.choices .cu{color:var(--util)} .choices .cw{color:var(--wonder)} .choices .cd{color:var(--dep)}
+.score{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+@media (max-width:400px){.choices{grid-template-columns:1fr}}
+
+/* Paso 9: depende */
+input[type=range]{width:100%;accent-color:var(--dep)}
+.ticks{display:flex;justify-content:space-between;font-size:.88rem;line-height:1.3;color:var(--muted);gap:.5rem}
+.ticks span{flex:1} .ticks span:nth-child(2){text-align:center} .ticks span:last-child{text-align:right}
+.axis{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--util),var(--wonder));margin-top:.4rem}
+.axis .pin{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--card);border:4px solid var(--ink);transform:translate(-50%,-50%);transition:left .4s ease}
+.axis-ends{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.9rem}
+@media (prefers-reduced-motion:reduce){.axis .pin{transition:none}}
+.critics{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.6rem}
+.critic{border-top:3px solid var(--dep);padding-top:.5rem;font-size:.96rem}
+.critic b{display:block}
+
+/* Paso 10: resumen */
+.recap{display:grid;gap:.5rem;counter-reset:r;list-style:none;padding:0;margin:0}
+.recap li{counter-increment:r;position:relative;padding-left:2.2rem;line-height:1.5}
+.recap li::before{content:counter(r);position:absolute;left:0;top:-.1rem;width:1.6rem;text-align:center;font-family:var(--display);font-size:1.4rem;line-height:1.2;color:var(--wonder)}
+.gloss-def{min-height:3rem}
+.sources{font-size:.92rem;color:var(--muted);padding-left:1.2rem;display:grid;gap:.2rem}
+.confetti{font-family:var(--display);font-style:italic;color:var(--wonder);font-size:1.2rem}
+
+body{margin:0}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="top-row">
+      <span class="brand"><b>Utilidad</b> → <i>asombro</i></span>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="dots" id="dots" aria-label="Progreso"></div>
+  </div>
+  <main class="card" id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const stage=$("#stage"), dotsEl=$("#dots"), countEl=$("#count");
+let step=0, visited=new Set([0]);
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+
+const STEPS=[
+/* 1 */ {name:"La gran pregunta",min:1,html:`
+  <span class="kicker">Paso 1 · La gran pregunta</span>
+  <h1>Las cosas valen de <span class="u">dos</span> maneras</h1>
+  <div class="duo">
+    <div class="side u"><strong>Vale PARA algo</strong><span>Instrumental. Es un medio.</span><span class="de">Folgewert</span></div>
+    <div class="side w"><strong>Vale POR sí mismo</strong><span>Autotélico. Es un fin.</span><span class="de">Selbstwert</span></div>
+  </div>
+  <p class="big">Toca un ejemplo y mira de qué lado cae:</p>
+  <div class="chips" id="s1chips"></div>
+  <div class="answer" id="s1ans">Elige un ejemplo de arriba.</div>
+  <div class="tip">Autotélico viene del griego: <b>autós</b> (uno mismo) + <b>telos</b> (fin). Su fin está dentro.</div>`,
+  init(){
+    const ex=[["Un martillo","u","Vale para clavar. Sin clavos que clavar, no le queda valor."],
+              ["Un atardecer","w","No sirve para nada y aun así lo miras. Vale por sí mismo."],
+              ["Un billete","u","Es un símbolo: vale por lo que permite comprar."],
+              ["Un abrazo sincero","w","No lo das para conseguir otra cosa. Su sentido está en él."],
+              ["Un cargador","u","Vale porque el móvil vale. Valor prestado."]];
+    const box=$("#s1chips"),ans=$("#s1ans");
+    ex.forEach(([t,k,why])=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed","false");
+      b.onclick=()=>{box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+        ans.className="answer "+k;ans.innerHTML=`<b>${k==="u"?"Vale PARA algo":"Vale POR sí mismo"}.</b> ${why}`};box.appendChild(b)});
+  }},
+/* 2 */ {name:"Valor y portador",min:1,html:`
+  <span class="kicker">Paso 2 · Valor y portador</span>
+  <h2>El objeto <span class="u">no es</span> el valor</h2>
+  <p class="big">El objeto es solo el <span class="hl-u">portador</span> <span class="de">(Wertträger)</span>. El valor es la cualidad que brilla a través de él.</p>
+  <div class="statue-box">
+    <svg id="statue" viewBox="0 0 160 200" role="img" aria-label="Estatua con un halo que representa la belleza">
+      <circle class="glow" id="glow" cx="80" cy="55" r="48" fill="var(--wonder-soft)" stroke="var(--wonder)" stroke-width="2" stroke-dasharray="4 5"/>
+      <g class="piece p1"><circle cx="80" cy="50" r="18" fill="var(--muted)"/></g>
+      <g class="piece p2"><rect x="62" y="70" width="36" height="58" rx="8" fill="var(--muted)"/></g>
+      <g class="piece p3"><rect x="54" y="128" width="52" height="16" rx="3" fill="var(--muted)"/></g>
+      <rect x="40" y="184" width="80" height="8" rx="2" fill="var(--line)"/>
+    </svg>
+  </div>
+  <div class="chips"><button class="btn" id="breakBtn">Romper la estatua</button></div>
+  <div class="answer" id="s2ans">El halo dorado es la <b>belleza</b>. La piedra es su portador.</div>
+  <details><summary>Más a fondo</summary><p>Hermann Lotze lo resumió así: los valores no <i>son</i>, <i>valen</i>. Nicolai Hartmann sitúa los valores en el ser ideal (atemporal) y los portadores en el ser real (temporal). Por eso un valor puede seguir valiendo aunque su portador desaparezca.</p></details>`,
+  init(){
+    let broken=false;const svg=$("#statue"),btn=$("#breakBtn"),ans=$("#s2ans");
+    btn.onclick=()=>{broken=!broken;svg.classList.toggle("broken",broken);
+      btn.textContent=broken?"Reconstruir":"Romper la estatua";
+      ans.className="answer "+(broken?"w":"");
+      ans.innerHTML=broken?"<b>La piedra se rompió.</b> ¿La belleza dejó de ser belleza? Para Scheler y Hartmann, no: se perdió el portador, no el valor.":"El halo dorado es la <b>belleza</b>. La piedra es su portador."};
+  }},
+/* 3 */ {name:"La prueba de la resta",min:1,html:`
+  <span class="kicker">Paso 3 · Tu herramienta</span>
+  <h2>La prueba de <span class="w">la resta</span></h2>
+  <p class="big">Quita mentalmente el fin al que sirve algo. <b>¿Le queda valor?</b></p>
+  <div class="chips" id="s3chips"></div>
+  <button class="btn" id="subBtn" disabled>Quitar su fin</button>
+  <div class="answer" id="s3ans">Elige un objeto primero.</div>
+  <div class="tip">Si no le queda nada, era <span class="hl-u">instrumental</span>. Si sigue valiendo, es <span class="hl-w">autotélico</span>.</div>`,
+  init(){
+    const items=[["Estetoscopio","Sin medicina que ejercer…","u","…es un tubo de goma y metal. Su valor era la salud que ayudaba a cuidar."],
+                 ["Tarjeta de crédito","Sin nada que comprar…","u","…es un trozo de plástico. Valor simbólico, totalmente prestado."],
+                 ["Un poema que te conmueve","Sin examen ni premio…","w","…sigue conmoviéndote. Su valor no dependía de servir para algo."],
+                 ["Defender a un inocente","Sin recompensa ni aplauso…","w","…sigue siendo justo. La justicia vale por su propia dignidad."]];
+    let cur=null;const box=$("#s3chips"),btn=$("#subBtn"),ans=$("#s3ans");
+    items.forEach(it=>{const b=document.createElement("button");b.className="chip";b.textContent=it[0];b.setAttribute("aria-pressed","false");
+      b.onclick=()=>{cur=it;box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+        btn.disabled=false;ans.className="answer";ans.textContent=it[1]};box.appendChild(b)});
+    btn.onclick=()=>{if(!cur)return;ans.className="answer "+cur[2];
+      ans.innerHTML=`${cur[1].replace(/…$/,"")}, ${cur[3].replace(/^…/,"")} <b>→ ${cur[2]==="u"?"Instrumental":"Autotélico"}</b>`};
+  }},
+/* 4 */ {name:"La escalera de Scheler",min:1,html:`
+  <span class="kicker">Paso 4 · Max Scheler</span>
+  <h2>Los valores tienen <span class="w">altura</span></h2>
+  <p>Scheler ordena los valores en una escalera. Toca cada escalón.</p>
+  <div class="ladder" id="ladder"></div>
+  <div class="answer" id="s4ans"></div>`,
+  init(){
+    const R=[["s4","Lo santo","IV","Lo absoluto. Se capta en el amor y la adoración. Ejemplo: lo sagrado para un creyente."],
+             ["s3","Espirituales","III","Belleza, justicia, verdad. Ejemplo: una obra de arte, una sentencia justa, una demostración."],
+             ["s2","Vitales","II","Salud, vigor, nobleza. Ejemplo: sentirse sano y con energía."],
+             ["s1","Agradables","I","Placer y confort sensibles. Ejemplo: un baño caliente."],
+             ["s0","Lo útil","base","No tiene escalón propio. Sirve a los de arriba: vale porque lleva a lo agradable o a lo vital. Su valor es <b>prestado</b>."]];
+    const box=$("#ladder"),ans=$("#s4ans");
+    const pick=(r,b)=>{box.querySelectorAll(".rung").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+      ans.className="answer "+(r[0]==="s0"?"u":"w");ans.innerHTML=`<b>${r[1]}.</b> ${r[3]}`};
+    R.forEach(r=>{const b=document.createElement("button");b.className="rung "+r[0];b.innerHTML=`<b>${r[1]}</b><span class="n">${r[2]}</span>`;
+      b.setAttribute("aria-pressed","false");b.onclick=()=>pick(r,b);box.appendChild(b)});
+    pick(R[4],box.lastChild);
+  }},
+/* 5 */ {name:"Cinco criterios",min:2,html:`
+  <span class="kicker">Paso 5 · Medir la altura</span>
+  <h2>5 preguntas para <span class="w">medir</span> un valor</h2>
+  <p>Toca cada tarjeta para ver cómo responden lo útil y lo autotélico.</p>
+  <div class="flips" id="flips"></div>
+  <p class="muted" id="flipCount"></p>`,
+  init(){
+    const C=[["Durabilidad","¿Dura o se gasta?","Se gasta o queda obsoleto.","Permanece aunque cambie el portador."],
+             ["Indivisibilidad","¿Hay que repartirlo?","Si lo uso yo, no lo usas tú.","Muchos lo disfrutan a la vez sin agotarlo."],
+             ["Fundamentación","¿Depende o sostiene?","Depende de un fin ajeno.","Da sentido a los medios."],
+             ["Profundidad","¿Qué tan hondo llena?","Alivio o confort superficial.","Plenitud en el centro de la persona."],
+             ["Relatividad","¿Depende del cuerpo o del momento?","Mucho: cambia con el estado físico.","Poco: se vive como algo absoluto."]];
+    const box=$("#flips"),cnt=$("#flipCount");const seen=new Set();
+    const upd=()=>cnt.textContent=seen.size===5?"✓ Las 5 revisadas. Cuanto más se parece un valor a la línea «asombro», más alto es.":`${seen.size} de 5 revisadas`;
+    C.forEach((c,i)=>{const b=document.createElement("button");b.className="flip";b.setAttribute("aria-expanded","false");
+      const front=`<strong>${c[0]}</strong><span class="q">${c[1]}</span><span class="tag">toca para ver</span>`;
+      const back=`<strong>${c[0]}</strong><div class="back"><span><span class="hl-u">útil</span> ${c[2]}</span><span><span class="hl-w">asombro</span> ${c[3]}</span></div>`;
+      b.innerHTML=front;b.onclick=()=>{const on=!b.classList.contains("on");b.classList.toggle("on",on);b.setAttribute("aria-expanded",on);b.innerHTML=on?back:front;if(on)seen.add(i);upd()};
+      box.appendChild(b)});upd();
+  }},
+/* 6 */ {name:"Lo fuerte y lo alto",min:1,html:`
+  <span class="kicker">Paso 6 · Nicolai Hartmann</span>
+  <h2>Lo más <span class="w">alto</span> es lo más <span class="u">frágil</span></h2>
+  <div class="tower">
+    <div class="tower-head"><span></span><span>fuerza (sostiene)</span><span>altura (vale)</span></div>
+    <div class="floor"><span class="lab">Espíritu</span><span class="meterbar f-str"><i style="width:20%"></i></span><span class="meterbar f-hi"><i style="width:100%"></i></span></div>
+    <div class="floor"><span class="lab">Alma</span><span class="meterbar f-str"><i style="width:45%"></i></span><span class="meterbar f-hi"><i style="width:70%"></i></span></div>
+    <div class="floor"><span class="lab">Vida</span><span class="meterbar f-str"><i style="width:70%"></i></span><span class="meterbar f-hi"><i style="width:40%"></i></span></div>
+    <div class="floor"><span class="lab">Materia</span><span class="meterbar f-str"><i style="width:100%"></i></span><span class="meterbar f-hi"><i style="width:10%"></i></span></div>
+  </div>
+  <p class="big">Como un edificio: los pisos de abajo cargan con todo, pero la vista está arriba.</p>
+  <div class="tip">Lo útil <b>no compite</b> con lo autotélico: lo <b>sostiene</b>. Sin lienzo no hay Guernica; sin tribunales no hay justicia que se cumpla.</div>
+  <details><summary>Más a fondo</summary><p>Es la ley de dependencia categorial: los estratos inferiores son ontológicamente más fuertes pero axiológicamente neutros. Hartmann ve a la persona como un «puente teleológico»: capta la exigencia de un valor (Tun-Sollen) y la lleva a la realidad usando medios.</p></details>`,
+  init(){}},
+/* 7 */ {name:"Dos miradas",min:1,html:`
+  <span class="kicker">Paso 7 · El asombro</span>
+  <h2>El mismo bosque, <span class="w">dos miradas</span></h2>
+  <div class="switch" role="group" aria-label="Elegir mirada"><button id="m-u" aria-pressed="true">Mirada de uso</button><button id="m-w" aria-pressed="false">Mirada de asombro</button></div>
+  <div class="scene u" id="scene"></div>
+  <p class="big">El asombro no añade valor a las cosas: <b>quita el «para qué»</b> que no nos dejaba verlo.</p>
+  <div class="voices">
+    <div class="voice"><b>Scheler</b>El asombro y la reverencia frente al afán moderno de dominar.</div>
+    <div class="voice"><b>Antonio Caso</b>La vida como economía frente a la vida como desinterés: el arte «derrocha».</div>
+    <div class="voice"><b>Deustua</b>Lo bello es una finalidad sin fin: libera de lo utilitario.</div>
+    <div class="voice"><b>Romero</b>El «interés desinteresado»: respetar las cosas tal como son.</div>
+  </div>`,
+  init(){
+    const V={u:["<b>Lo que ves:</b>","300 m³ de madera aprovechable","Terreno para urbanizar","Leña para el invierno"],
+             w:["<b>Lo que ves:</b>","La luz filtrándose entre las hojas","Un silencio que no se compra","Árboles más viejos que tu familia"]};
+    const sc=$("#scene"),bu=$("#m-u"),bw=$("#m-w");
+    const set=k=>{sc.className="scene "+k;sc.innerHTML=V[k][0]+"<ul>"+V[k].slice(1).map(x=>`<li>${x}</li>`).join("")+"</ul>";
+      bu.setAttribute("aria-pressed",k==="u");bw.setAttribute("aria-pressed",k==="w")};
+    bu.onclick=()=>set("u");bw.onclick=()=>set("w");set("u");
+  }},
+/* 8 */ {name:"Juego: clasifica",min:2,html:`
+  <span class="kicker">Paso 8 · Practica</span>
+  <h2>¿Útil, autotélico o <span class="d">depende</span>?</h2>
+  <div class="score"><span id="gProg"></span><span id="gScore"></span></div>
+  <div class="game-item" id="gItem"></div>
+  <div class="choices" id="gChoices">
+    <button class="cu" data-k="u">Útil</button><button class="cw" data-k="w">Autotélico</button><button class="cd" data-k="d">Depende</button>
+  </div>
+  <div class="answer" id="gAns">Usa la prueba de la resta.</div>
+  <button class="btn wide" id="gNext" disabled>Otro ejemplo →</button>`,
+  init(){
+    const G=[["Un paraguas","u","Sin lluvia no le queda valor. Medio puro."],
+             ["Escuchar tu sinfonía favorita","w","No la escuchas para otra cosa. Vale en sí."],
+             ["Un GPS","u","Vale porque llegar a un sitio vale."],
+             ["Decir la verdad cuando cuesta","w","La veracidad vale aunque no te dé ventaja."],
+             ["Un pan","d","Confort para quien está lleno, vida para quien tiene hambre. Lo verás en el paso 9."],
+             ["Contemplar un amanecer","w","Ningún fin ulterior: el puro asombro."],
+             ["Un diploma","d","Puede ser medio para un empleo o reconocimiento de un saber que vale por sí. Depende de para quién."],
+             ["Dinero en el banco","u","Valor simbólico: vale por lo que permite."]];
+    let i=0,score=0,answered=false;const item=$("#gItem"),ans=$("#gAns"),nx=$("#gNext"),pr=$("#gProg"),scEl=$("#gScore");
+    const names={u:"Útil",w:"Autotélico",d:"Depende"};
+    const show=()=>{answered=false;nx.disabled=true;item.textContent=G[i][0];pr.textContent=`${i+1} / ${G.length}`;scEl.textContent=`aciertos: ${score}`;
+      ans.className="answer";ans.textContent="Usa la prueba de la resta.";};
+    $("#gChoices").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(answered)return;answered=true;
+      const ok=b.dataset.k===G[i][1];if(ok)score++;scEl.textContent=`aciertos: ${score}`;
+      ans.className="answer "+(ok?"ok":"bad");ans.innerHTML=`<b>${ok?"¡Bien!":"Casi."}</b> Es <b>${names[G[i][1]]}</b>. ${G[i][2]}`;
+      nx.disabled=false;nx.textContent=i===G.length-1?"Ver resultado":"Otro ejemplo →"});
+    nx.onclick=()=>{if(i<G.length-1){i++;show()}else{item.innerHTML=`<span class="confetti">${score} de ${G.length}</span>`;
+      ans.className="answer w";ans.innerHTML=score>=6?"<b>¡Lo tienes!</b> Ya distingues los dos modos de valer.":"<b>Buen intento.</b> Repasa la prueba de la resta y vuelve a jugar.";
+      nx.textContent="Jugar otra vez";nx.onclick=()=>{i=0;score=0;show();nx.onclick=null;STEPS[7].init()}}};
+    show();
+  }},
+/* 9 */ {name:"El «depende»",min:2,html:`
+  <span class="kicker">Paso 9 · La crítica</span>
+  <h2>¿Y si el valor <span class="d">depende</span>?</h2>
+  <p>Mueve el control: el mismo pan, tres situaciones.</p>
+  <input type="range" id="bread" min="0" max="2" step="1" value="0" aria-label="Situación del pan">
+  <div class="ticks"><span>Estás lleno</span><span>Hay hambruna</span><span>Lo compartes</span></div>
+  <div class="answer d" id="breadAns"></div>
+  <div><div class="axis"><div class="pin" id="breadPin"></div></div><div class="axis-ends"><span>utilidad</span><span>asombro</span></div></div>
+  <p class="big">Scheler diría que la escala no cambia, solo nuestro <b>ethos</b>. Sus críticos dicen otra cosa:</p>
+  <div class="critics">
+    <div class="critic"><b>Korn</b>Solo hay valoraciones históricas: cada época decide su escala.</div>
+    <div class="critic"><b>Caso</b>Sin sociedad, el valor se apaga: son valencias sociales.</div>
+    <div class="critic"><b>Frondizi</b>El valor nace de sujeto + objeto + situación.</div>
+    <div class="critic"><b>Bueno</b>Los valores existen dentro de instituciones concretas.</div>
+  </div>
+  <div class="tip">Pregunta mejorada: no solo «¿medio o fin?», sino <b>«¿medio o fin aquí, para quién?»</b></div>`,
+  init(){
+    const S=[["Agradable · instrumental","Un bocado más. Confort sensorial, valor pequeño y prestado.",12],
+             ["Vital · casi absoluto","Ahora es subsistencia. Sube de escalón: lo vital.",45],
+             ["Ético · autotélico","Compartirlo encarna la solidaridad: un valor que vale por sí mismo.",85]];
+    const r=$("#bread"),a=$("#breadAns"),p=$("#breadPin");
+    const set=()=>{const s=S[+r.value];a.innerHTML=`<b>${s[0]}.</b> ${s[1]}`;p.style.left=s[2]+"%"};r.oninput=set;set();
+  }},
+/* 10 */ {name:"Resumen",min:2,html:`
+  <span class="kicker">Paso 10 · Lo esencial</span>
+  <h2>Seis ideas para <span class="w">llevarte</span></h2>
+  <ol class="recap">
+    <li>Las cosas valen <b>para</b> algo (útil) o <b>por</b> sí mismas (autotélico).</li>
+    <li>El objeto es el <b>portador</b>; el valor es la cualidad.</li>
+    <li>Prueba de la resta: quita el fin; si no queda nada, era útil.</li>
+    <li>Lo útil está en la base de la escalera de Scheler: su valor es prestado.</li>
+    <li>Con Hartmann, lo útil sostiene a lo alto: no son enemigos.</li>
+    <li>Pasar de la utilidad al asombro es cambiar la mirada, y el contexto puede mover la frontera.</li>
+  </ol>
+  <p><b>Vocabulario.</b> Toca una palabra:</p>
+  <div class="chips" id="gloss"></div>
+  <div class="answer gloss-def" id="glossDef">Elige una palabra de arriba.</div>
+  <details><summary>Fuentes del cuaderno (15)</summary>
+    <ol class="sources">
+      <li>Axiología (presentación) · Slideshare</li><li>El hombre y los valores en la filosofía latinoamericana del siglo XX</li>
+      <li>El valor de la Axiología: crítica a la Idea de Valor</li><li>Scheler and Zambrano: on a transformation of the heart in Spanish philosophy (2 versiones)</li>
+      <li>I. Johansson, Hartmann's Nonreductive Materialism</li><li>Informe: Fundamentos de la axiología fenomenológica (Scheler)</li>
+      <li>La Axiología: estudio de los valores · Algor Cards</li><li>Material Ethics of Value: Max Scheler and Nicolai Hartmann</li>
+      <li>Material Ethics of Values (Scheler, Hartmann, von Hildebrand)</li><li>Max Scheler · Stanford Encyclopedia of Philosophy</li>
+      <li>Max Scheler · The Partially Examined Life</li><li>N. Hartmann, New Ways of Ontology</li>
+      <li>Pilares de los valores (tus apuntes)</li><li>The Philosophy of Nicolai Hartmann</li>
+    </ol>
+    <p>Las síntesis vienen de las respuestas de tu cuaderno; verifica las atribuciones en los textos antes de citarlas.</p>
+  </details>`,
+  init(){
+    const W=[["Wertträger","Portador de valor: la cosa, acto o persona donde se encarna un valor."],
+             ["Selbstwert","Valor propio o intrínseco: vale por sí mismo."],
+             ["Folgewert","Valor consecutivo: técnico, útil o simbólico; vale por otro."],
+             ["Wertfühlen","Sentir los valores: captarlos con la afectividad, sin calcular."],
+             ["Vorziehen","Preferir: el acto en que notas que un valor es más alto que otro."],
+             ["Ethos","El mapa de preferencias de una persona, grupo o época."],
+             ["Ehrfurcht","Reverencia: el respeto que deja ser a las cosas."],
+             ["Autotélico","Con su fin en sí mismo (autós + telos)."]];
+    const box=$("#gloss"),d=$("#glossDef");
+    W.forEach(([t,def])=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed","false");
+      b.onclick=()=>{box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");d.className="answer w";d.innerHTML=`<b>${t}.</b> ${def}`};box.appendChild(b)});
+  }}
+];
+
+function go(n){
+  step=Math.max(0,Math.min(STEPS.length-1,n));visited.add(step);save("paso",step);
+  const s=STEPS[step];
+  stage.innerHTML=s.html+`<div class="nav"><button class="btn ghost" id="prev" ${step===0?"disabled":""}>← Atrás</button><button class="btn" id="next">${step===STEPS.length-1?"Volver al inicio":"Siguiente →"}</button></div>`;
+  s.init();
+  $("#prev").onclick=()=>go(step-1);
+  $("#next").onclick=()=>go(step===STEPS.length-1?0:step+1);
+  dotsEl.innerHTML="";
+  STEPS.forEach((t,i)=>{const b=document.createElement("button");b.className=i===step?"now":(visited.has(i)?"done":"");
+    b.setAttribute("aria-label",`Paso ${i+1}: ${t.name}`);if(i===step)b.setAttribute("aria-current","step");b.onclick=()=>go(i);dotsEl.appendChild(b)});
+  countEl.textContent=`${step+1}/${STEPS.length} · ~${s.min} min`;
+  window.scrollTo({top:0});
+}
+document.addEventListener("keydown",e=>{if(e.target.matches("input,textarea"))return;if(e.key==="ArrowRight")go(step+1);if(e.key==="ArrowLeft")go(step-1)});
+const saved=load("paso",0);for(let i=0;i<=saved;i++)visited.add(i);
+go(typeof saved==="number"?saved:0);
+</script>
+</body>
+</html>
