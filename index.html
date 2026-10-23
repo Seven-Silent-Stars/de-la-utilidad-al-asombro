@@ -89,7 +89,7 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 .btn.wide{width:100%}
 .btn:active:not(:disabled),.tile:active .sq,.chip:active{transform:translateY(2px)}
 .nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:1rem}
-.nav .btn{min-width:8rem}
+.nav .btn{flex:0 1 11rem;min-width:0;padding-inline:.9rem}
 
 /* Baldosas con icono */
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(5.6rem,1fr));gap:.6rem}
@@ -104,7 +104,7 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 
 /* Respuesta */
 .answer{display:flex;gap:.8rem;align-items:flex-start;border-radius:12px;padding:.9rem 1rem;font-size:1.05rem;border-left:5px solid var(--line);background:var(--bg);min-height:3.4rem}
-.answer>div{min-width:0}
+.answer>div{min-width:0;overflow-wrap:break-word}
 .answer.u{border-color:var(--util)} .answer.w{border-color:var(--wonder)} .answer.d{border-color:var(--dep)}
 .answer.ok{border-color:var(--ok)} .answer.bad{border-color:var(--bad)}
 
@@ -145,12 +145,16 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 .rung.s0{border-style:dashed;background:var(--util-soft)}
 
 /* Paso 5 */
-.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.7rem}
-.flip{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.9rem;text-align:left;display:grid;gap:.4rem;min-height:9rem;align-content:start}
-.flip .fh{display:flex;align-items:center;gap:.6rem}
-.flip strong{font-size:1.05rem}
-.flip .q{color:var(--muted);font-size:.95rem}
-.flip .back{display:grid;gap:.35rem;font-size:.95rem}
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr));gap:.7rem}
+.flip{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.9rem 1rem;text-align:left;display:grid;grid-template-columns:minmax(0,1fr);gap:.45rem;align-content:start;min-width:0;overflow-wrap:break-word}
+.flip:last-child:nth-child(odd){grid-column:1/-1}
+.flip .fh{display:flex;align-items:center;gap:.6rem;min-width:0}
+.flip .fh .px{flex:none}
+.flip strong{font-size:1.05rem;line-height:1.2;min-width:0}
+.flip .q{color:var(--muted);font-size:.97rem;line-height:1.4}
+.flip .back{display:grid;gap:.55rem;font-size:.97rem;line-height:1.45}
+.flip .row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.55rem;align-items:baseline}
+.flip .row .hl-u,.flip .row .hl-w{font-size:.78rem;font-family:var(--mono);letter-spacing:.04em;text-align:center;min-width:5.2rem}
 .flip.on{border-color:var(--wonder)}
 .flip .tag{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
 
@@ -189,11 +193,14 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
 .choices button{border:2px solid var(--line);border-radius:12px;padding:.6rem .4rem;font-weight:700;background:var(--card);display:grid;justify-items:center;gap:.25rem}
 .choices .cu{color:var(--util)} .choices .cw{color:var(--wonder)} .choices .cd{color:var(--dep)}
-.score{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.score{display:flex;justify-content:space-between;gap:.5rem;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+@media (max-width:380px){.choices{grid-template-columns:1fr}.choices button{grid-auto-flow:column;justify-content:center;align-items:center;gap:.6rem}}
 
 /* Paso 9 */
 .bread{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center}
 .bread .sq{width:96px;height:96px;border-radius:16px;display:grid;place-items:center;background:var(--dep-soft)}
+.bread>*{min-width:0}
+@media (max-width:400px){.bread{grid-template-columns:1fr;justify-items:center}.bread .answer{justify-self:stretch}}
 input[type=range]{width:100%;accent-color:var(--dep)}
 .ticks{display:flex;justify-content:space-between;font-size:.88rem;line-height:1.3;color:var(--muted);gap:.5rem}
 .ticks span{flex:1} .ticks span:nth-child(2){text-align:center} .ticks span:last-child{text-align:right}
@@ -218,7 +225,7 @@ body{margin:0}[hidden]{display:none!important}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" lang="es">
   <div class="top">
     <div class="top-row">
       <span class="brand"><canvas class="px px-xs" data-px="util"></canvas><span class="bt"><b>Utilidad</b> → <i>asombro</i></span><span class="ba">→</span><canvas class="px px-xs" data-px="asombro"></canvas></span>
@@ -533,7 +540,7 @@ const STEPS=[
     C.forEach((c,i)=>{const b=document.createElement("button");b.className="flip";b.setAttribute("aria-expanded","false");
       const head=`<span class="fh">${px(c[0],"s")}<strong>${c[1]}</strong></span>`;
       const front=`${head}<span class="q">${c[2]}</span><span class="tag">toca para ver</span>`;
-      const back=`${head}<div class="back"><span><span class="hl-u">útil</span> ${c[3]}</span><span><span class="hl-w">asombro</span> ${c[4]}</span></div>`;
+      const back=`${head}<div class="back"><div class="row"><span class="hl-u">útil</span><span>${c[3]}</span></div><div class="row"><span class="hl-w">asombro</span><span>${c[4]}</span></div></div>`;
       b.innerHTML=front;b.onclick=()=>{const on=!b.classList.contains("on");play("flip");b.classList.toggle("on",on);b.setAttribute("aria-expanded",on);b.innerHTML=on?back:front;paintAll(b);
         if(on){const was=seen.size;seen.add(i);if(seen.size===5&&was<5)setTimeout(()=>play("unlock"),180)}upd()};
       box.appendChild(b)});paintAll(box);upd();
