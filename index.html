@@ -8,37 +8,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,600;1,6..96,500&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: un paso por pantalla (tarjeta central ~42rem) con barra de progreso fija arriba; eje de color de lo útil (pizarra) al asombro (oro), con un tercer tono para el «depende». */
+/* Layout: un paso por pantalla con barra de progreso fija; iconos pixel art en baldosas cuadradas; eje útil (pizarra) → asombro (oro), verde para el «depende». */
 :root{
-  --bg:#eef1f5;
-  --card:#ffffff;
-  --ink:#18202e;
-  --muted:#5b6577;
-  --line:#d6dce6;
-  --util:#3f6187;
-  --util-soft:#e3ebf4;
-  --wonder:#a06a08;
-  --wonder-soft:#fbf0d9;
-  --dep:#2f7a64;
-  --dep-soft:#dff1ea;
-  --ok:#2f7a3e;
-  --bad:#b0402f;
+  --bg:#eef1f5;--card:#ffffff;--ink:#18202e;--muted:#5b6577;--line:#d6dce6;
+  --util:#3f6187;--util-soft:#e3ebf4;--wonder:#a06a08;--wonder-soft:#fbf0d9;--dep:#2f7a64;--dep-soft:#dff1ea;
+  --ok:#2f7a3e;--bad:#b0402f;--neutral-soft:#f4f6f9;
   --display:"Bodoni Moda","Didot",Georgia,serif;
   --body:"Atkinson Hyperlegible","Verdana","Segoe UI",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0f131a;--card:#181e29;--ink:#e8ebf1;--muted:#9ba5b7;--line:#2b3342;
-    --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;
-    --dep:#6fcfae;--dep-soft:#15302a;--ok:#7fd18f;--bad:#f0907e;color-scheme:dark;
-  }
-}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f131a;--card:#181e29;--ink:#e8ebf1;--muted:#9ba5b7;--line:#2b3342;
+  --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;--dep:#6fcfae;--dep-soft:#15302a;
+  --ok:#7fd18f;--bad:#f0907e;--neutral-soft:#1f2633;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f131a;--card:#181e29;--ink:#e8ebf1;--muted:#9ba5b7;--line:#2b3342;
-  --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;
-  --dep:#6fcfae;--dep-soft:#15302a;--ok:#7fd18f;--bad:#f0907e;color-scheme:dark;
-}
+  --util:#8fb0d6;--util-soft:#1c2a3b;--wonder:#e8b955;--wonder-soft:#2d2512;--dep:#6fcfae;--dep-soft:#15302a;
+  --ok:#7fd18f;--bad:#f0907e;--neutral-soft:#1f2633;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.12rem;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 3rem}
@@ -46,13 +32,20 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--wonder);outline-offset:3px;border-radius:6px}
 .wrap{max-width:42rem;margin-inline:auto}
+canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;display:block;flex:none}
+.px-xs{width:24px;height:24px}.px-s{width:32px;height:32px}.px-m{width:48px;height:48px}.px-l{width:80px;height:80px}.px-xl{width:144px;height:144px}
 
 /* Barra superior */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:.9rem .7rem;display:grid;gap:.55rem}
-.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem}
-.brand{font-family:var(--display);font-style:italic;font-size:1.1rem;white-space:nowrap}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:.8rem .7rem;display:grid;gap:.55rem}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:.6rem}
+.brand{display:flex;align-items:center;gap:.4rem;font-family:var(--display);font-style:italic;font-size:1.05rem;white-space:nowrap;min-width:0}
 .brand b{font-style:normal;color:var(--util)} .brand i{color:var(--wonder)}
-.count{font-family:var(--mono);font-size:.78rem;color:var(--muted);white-space:nowrap}
+.right{display:flex;align-items:center;gap:.6rem}
+.count{font-family:var(--mono);font-size:.76rem;color:var(--muted);white-space:nowrap}
+.snd{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:.3rem .55rem;font-family:var(--mono);font-size:.74rem;white-space:nowrap}
+.snd[aria-pressed="false"]{color:var(--muted);border-style:dashed}
+.ba{display:none;color:var(--muted)}
+@media (max-width:480px){.bt{display:none}.ba{display:inline}.count .mins{display:none}}
 .dots{display:flex;gap:5px}
 .dots button{flex:1;height:8px;border-radius:4px;border:0;background:var(--line);padding:0}
 .dots button.done{background:linear-gradient(90deg,var(--util),var(--wonder))}
@@ -62,25 +55,31 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.6rem 1.25rem;margin-top:.6rem;min-height:24rem;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:1.1rem;width:100%}
 .card>*{min-width:0}
 @media (min-width:600px){.card{padding:2rem 2.2rem}}
+.card.in-next{animation:inNext .28s steps(6) both}.card.in-back{animation:inBack .28s steps(6) both}
+@keyframes inNext{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes inBack{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.card.in-next,.card.in-back{animation:none}}
 .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.head{display:flex;align-items:center;gap:.9rem}
+.head .px{border-radius:10px}
 h1,h2{font-family:var(--display);font-weight:600;line-height:1.12;margin:0;text-wrap:balance}
-h1{font-size:clamp(2.2rem,8vw,3.3rem)}
-h2{font-size:clamp(1.6rem,5.5vw,2.2rem)}
+h1{font-size:clamp(2.1rem,8vw,3.2rem)}
+h2{font-size:clamp(1.55rem,5.5vw,2.15rem)}
 h1 .u,h2 .u{color:var(--util)} h1 .w,h2 .w{color:var(--wonder)} h2 .d{color:var(--dep)}
 p{margin:0}
-.big{font-size:1.25rem}
+.big{font-size:1.22rem}
 .muted{color:var(--muted)}
 .hl-u{background:var(--util-soft);color:var(--util);padding:0 .3em;border-radius:4px;font-weight:700}
 .hl-w{background:var(--wonder-soft);color:var(--wonder);padding:0 .3em;border-radius:4px;font-weight:700}
-.hl-d{background:var(--dep-soft);color:var(--dep);padding:0 .3em;border-radius:4px;font-weight:700}
 .de{font-family:var(--mono);font-size:.82em;color:var(--muted)}
 .tip{position:relative;display:block;background:var(--bg);border-radius:12px;padding:.85rem 1rem .85rem 2.1rem;font-size:1.02rem;line-height:1.55}
 .tip::before{content:"";position:absolute;left:.95rem;top:1.35rem;width:9px;height:9px;border-radius:50%;background:var(--wonder)}
 details{border-top:1px dashed var(--line);padding-top:.8rem}
-summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.98rem}
+summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.98rem;display:flex;align-items:center;gap:.5rem;list-style:none}
+summary::-webkit-details-marker{display:none}
 details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 
-/* Botones y chips */
+/* Botones */
 .chips{display:flex;flex-wrap:wrap;gap:.5rem}
 .chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:.5rem 1rem;font-weight:700;font-size:1rem}
 .chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--card)}
@@ -88,33 +87,55 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
 .btn:disabled{background:transparent;color:var(--muted);border:2px dashed var(--line);cursor:default}
 .btn.wide{width:100%}
+.btn:active:not(:disabled),.tile:active .sq,.chip:active{transform:translateY(2px)}
 .nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:1rem}
 .nav .btn{min-width:8rem}
 
-/* Paso 1: dos caras */
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-.side{border-radius:14px;padding:1rem;display:grid;gap:.3rem;min-width:0}
-.side.u{background:var(--util-soft)} .side.w{background:var(--wonder-soft)}
-.side strong{font-size:1.25rem} .side.u strong{color:var(--util)} .side.w strong{color:var(--wonder)}
-.side span{font-size:.95rem;color:var(--muted)}
-@media (max-width:420px){.duo{grid-template-columns:1fr}}
-.answer{border-radius:12px;padding:.9rem 1rem;font-size:1.05rem;border-left:5px solid var(--line);background:var(--bg);min-height:3.4rem}
+/* Baldosas con icono */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(5.6rem,1fr));gap:.6rem}
+.tiles.four{grid-template-columns:repeat(auto-fill,minmax(6.4rem,1fr))}
+.tile{display:grid;justify-items:center;align-content:start;gap:.35rem;border:0;background:transparent;padding:0;min-width:0}
+.tile .sq{width:100%;aspect-ratio:1;border-radius:14px;border:2px solid var(--line);display:grid;place-items:center;background:var(--neutral-soft);transition:transform .1s}
+.tile .sq .px{width:58%;height:58%}
+.tile span{font-size:.9rem;font-weight:700;text-align:center;line-height:1.25;overflow-wrap:anywhere}
+.tile[aria-pressed="true"] .sq{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.t-u .sq{background:var(--util-soft)} .t-w .sq{background:var(--wonder-soft)} .t-d .sq{background:var(--dep-soft)}
+.tile.mystery .sq{background:var(--neutral-soft)}
+
+/* Respuesta */
+.answer{display:flex;gap:.8rem;align-items:flex-start;border-radius:12px;padding:.9rem 1rem;font-size:1.05rem;border-left:5px solid var(--line);background:var(--bg);min-height:3.4rem}
+.answer>div{min-width:0}
 .answer.u{border-color:var(--util)} .answer.w{border-color:var(--wonder)} .answer.d{border-color:var(--dep)}
 .answer.ok{border-color:var(--ok)} .answer.bad{border-color:var(--bad)}
 
-/* Paso 2: estatua */
-.statue-box{display:grid;place-items:center;background:var(--bg);border-radius:14px;padding:1rem}
-.statue-box svg{width:160px;height:auto;max-width:100%}
-.piece{transition:transform .6s ease, opacity .6s}
-.broken .p1{transform:translate(-26px,40px) rotate(-25deg)}
-.broken .p2{transform:translate(30px,52px) rotate(30deg)}
-.broken .p3{transform:translate(-8px,70px) rotate(12deg)}
-.glow{transition:opacity .6s}
-@media (prefers-reduced-motion:reduce){.piece,.glow{transition:none}}
+/* Paso 0 */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.pair .pc{border-radius:14px;padding:1rem;display:grid;gap:.5rem;justify-items:start;border:2px solid var(--line);background:var(--card);text-align:left}
+.pair .pc[aria-pressed="true"]{border-color:var(--ink)}
+.pair .pc .lab{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pair .pc q{font-size:1.05rem;quotes:"«" "»"}
+@media (max-width:440px){.pair{grid-template-columns:1fr}}
+.why{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.4rem .8rem;align-items:center;background:var(--bg);border-radius:12px;padding:.9rem 1rem}
 
-/* Paso 4: escalera */
+/* Paso 1 */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.side{border-radius:14px;padding:1rem;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.2rem .8rem;align-items:center}
+.side .px{grid-row:span 2}
+.side.u{background:var(--util-soft)} .side.w{background:var(--wonder-soft)}
+.side strong{font-size:1.15rem;line-height:1.2} .side.u strong{color:var(--util)} .side.w strong{color:var(--wonder)}
+.side span{font-size:.92rem;color:var(--muted)}
+@media (max-width:440px){.duo{grid-template-columns:1fr}}
+
+/* Paso 2 */
+.statue-box{display:grid;place-items:center;background:var(--wonder-soft);border-radius:14px;padding:1.2rem}
+.statue-box.shake{animation:shake .32s steps(4)}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+@media (prefers-reduced-motion:reduce){.statue-box.shake{animation:none}}
+
+/* Paso 4 */
 .ladder{display:grid;gap:.45rem}
-.rung{display:flex;justify-content:space-between;align-items:center;gap:.8rem;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.7rem 1rem}
+.rung{display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.45rem .8rem}
+.rung b{flex:1}
 .rung .n{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
 .rung[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
 .rung.s4{border-left:8px solid var(--wonder)}
@@ -123,64 +144,75 @@ details p{margin-top:.6rem;font-size:1rem;color:var(--muted)}
 .rung.s1{border-left:8px solid var(--util)}
 .rung.s0{border-style:dashed;background:var(--util-soft)}
 
-/* Paso 5: criterios */
+/* Paso 5 */
 .flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.7rem}
-.flip{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.9rem;text-align:left;display:grid;gap:.35rem;min-height:8.5rem;align-content:start}
-.flip strong{font-size:1.1rem}
+.flip{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:.9rem;text-align:left;display:grid;gap:.4rem;min-height:9rem;align-content:start}
+.flip .fh{display:flex;align-items:center;gap:.6rem}
+.flip strong{font-size:1.05rem}
 .flip .q{color:var(--muted);font-size:.95rem}
 .flip .back{display:grid;gap:.35rem;font-size:.95rem}
 .flip.on{border-color:var(--wonder)}
 .flip .tag{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
 
-/* Paso 6: Hartmann */
-.tower{display:grid;gap:4px}
-.floor{display:grid;grid-template-columns:7.5rem 1fr 1fr;gap:.6rem;align-items:center;font-size:.92rem}
+/* Paso 6 */
+.hart{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center}
+.tower{display:grid;gap:6px}
+.floor{display:grid;grid-template-columns:4.6rem 1fr 1fr;gap:.5rem;align-items:center;font-size:.9rem}
 .floor .lab{font-weight:700}
 .meterbar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
 .meterbar i{display:block;height:100%;border-radius:7px}
 .f-str i{background:var(--util)} .f-hi i{background:var(--wonder)}
-.tower-head{display:grid;grid-template-columns:7.5rem 1fr 1fr;gap:.6rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-@media (max-width:420px){.floor,.tower-head{grid-template-columns:5.5rem 1fr 1fr}}
+.tower-head{display:grid;grid-template-columns:4.6rem 1fr 1fr;gap:.5rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.2}
+@media (max-width:460px){.hart{grid-template-columns:1fr;justify-items:center}.hart .tower{width:100%}}
 
-/* Paso 7: miradas */
+/* Paso 7 */
 .switch{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:14px;padding:4px;gap:4px}
 .switch button{border:0;background:transparent;border-radius:11px;padding:.6rem .5rem;font-weight:700;line-height:1.25}
 .switch button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.scene{border-radius:14px;padding:1.1rem;display:grid;gap:.5rem;transition:background .4s}
+.scene{border-radius:14px;padding:1rem;display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center}
+.scene .px{border-radius:10px}
 .scene.u{background:var(--util-soft)} .scene.w{background:var(--wonder-soft)}
-.scene ul{margin:0;padding-left:1.2rem;display:grid;gap:.3rem}
+.scene ul{margin:0;padding-left:1.1rem;display:grid;gap:.3rem;font-size:1rem}
 .scene.u li::marker{color:var(--util)} .scene.w li::marker{color:var(--wonder)}
+@media (max-width:440px){.scene{grid-template-columns:1fr;justify-items:center}.scene ul{justify-self:stretch}}
 .voices{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.6rem}
 .voice{border:1px solid var(--line);border-radius:12px;padding:.75rem .9rem;font-size:.96rem;display:grid;gap:.2rem}
 .voice b{font-family:var(--display);font-size:1.1rem}
 
-/* Paso 8: juego */
-.game-item{font-family:var(--display);font-size:clamp(1.6rem,6vw,2.1rem);text-align:center;padding:1rem 0 .4rem}
+/* Paso 8 */
+.game-card{display:grid;justify-items:center;gap:.5rem;padding:.6rem 0}
+.game-card .sq{width:120px;height:120px;border-radius:18px;display:grid;place-items:center;background:var(--neutral-soft);border:2px solid var(--line)}
+.game-card .sq.pop{animation:pop .25s steps(3)}
+@keyframes pop{from{transform:scale(.85)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.game-card .sq.pop{animation:none}}
+.game-item{font-family:var(--display);font-size:clamp(1.4rem,5.5vw,1.9rem);text-align:center;line-height:1.2}
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
-.choices button{border:2px solid var(--line);border-radius:12px;padding:.8rem .4rem;font-weight:700;background:var(--card)}
+.choices button{border:2px solid var(--line);border-radius:12px;padding:.6rem .4rem;font-weight:700;background:var(--card);display:grid;justify-items:center;gap:.25rem}
 .choices .cu{color:var(--util)} .choices .cw{color:var(--wonder)} .choices .cd{color:var(--dep)}
 .score{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
-@media (max-width:400px){.choices{grid-template-columns:1fr}}
 
-/* Paso 9: depende */
+/* Paso 9 */
+.bread{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center}
+.bread .sq{width:96px;height:96px;border-radius:16px;display:grid;place-items:center;background:var(--dep-soft)}
 input[type=range]{width:100%;accent-color:var(--dep)}
 .ticks{display:flex;justify-content:space-between;font-size:.88rem;line-height:1.3;color:var(--muted);gap:.5rem}
 .ticks span{flex:1} .ticks span:nth-child(2){text-align:center} .ticks span:last-child{text-align:right}
 .axis{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--util),var(--wonder));margin-top:.4rem}
-.axis .pin{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--card);border:4px solid var(--ink);transform:translate(-50%,-50%);transition:left .4s ease}
+.axis .pin{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--card);border:4px solid var(--ink);transform:translate(-50%,-50%);transition:left .4s steps(5)}
 .axis-ends{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.9rem}
 @media (prefers-reduced-motion:reduce){.axis .pin{transition:none}}
 .critics{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.6rem}
 .critic{border-top:3px solid var(--dep);padding-top:.5rem;font-size:.96rem}
 .critic b{display:block}
 
-/* Paso 10: resumen */
-.recap{display:grid;gap:.5rem;counter-reset:r;list-style:none;padding:0;margin:0}
-.recap li{counter-increment:r;position:relative;padding-left:2.2rem;line-height:1.5}
-.recap li::before{content:counter(r);position:absolute;left:0;top:-.1rem;width:1.6rem;text-align:center;font-family:var(--display);font-size:1.4rem;line-height:1.2;color:var(--wonder)}
+/* Paso 10 */
+.recap{display:grid;gap:.5rem;list-style:none;padding:0;margin:0}
+.recap li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.7rem;align-items:center;line-height:1.45}
 .gloss-def{min-height:3rem}
+.sfx-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.sfx-row .chip{font-size:.88rem;padding:.4rem .8rem}
 .sources{font-size:.92rem;color:var(--muted);padding-left:1.2rem;display:grid;gap:.2rem}
-.confetti{font-family:var(--display);font-style:italic;color:var(--wonder);font-size:1.2rem}
+.final{font-family:var(--display);font-style:italic;color:var(--wonder);font-size:1.3rem}
 
 body{margin:0}[hidden]{display:none!important}
 </style>
@@ -189,8 +221,8 @@ body{margin:0}[hidden]{display:none!important}
 <div class="wrap">
   <div class="top">
     <div class="top-row">
-      <span class="brand"><b>Utilidad</b> → <i>asombro</i></span>
-      <span class="count" id="count"></span>
+      <span class="brand"><canvas class="px px-xs" data-px="util"></canvas><span class="bt"><b>Utilidad</b> → <i>asombro</i></span><span class="ba">→</span><canvas class="px px-xs" data-px="asombro"></canvas></span>
+      <span class="right"><span class="count" id="count"></span><button class="snd" id="snd" aria-pressed="true">♪ Sonido</button></span>
     </div>
     <div class="dots" id="dots" aria-label="Progreso"></div>
   </div>
@@ -198,221 +230,426 @@ body{margin:0}[hidden]{display:none!important}
 </div>
 
 <script>
+/* ---------- Sprites ---------- */
+const SPRITES={"size":16,"palette":{"K":"#18202e","G":"#5b6577","L":"#d6dce6","W":"#ffffff","B":"#3f6187","b":"#8fb0d6","c":"#e3ebf4","O":"#a06a08","Y":"#e8b955","y":"#fbf0d9","E":"#2f7a64","e":"#6fcfae","R":"#b0402f","r":"#f0907e","P":"#5b3f8c","p":"#a57fc9","n":"#f29bb0","N":"#ee7f37"},"lineDark":"#e8ebf1","fullScenes":["atardecer","bosque_asombro","bosque_uso"],"sprites":{"util":{"label":"Útil (engranaje)","rows":["......KKKK......","...KK.KBBK.KK...","..KBBKKBBKKBBK..","..KBbbBBBBBBBK..","...KBBBKKBBBK...",".KKKBBK..KBBKKK.",".KbBBK....KBBBK.",".KBBBK....KBBBK.",".KKKBBK..KBBKKK.","...KBBBKKBBBK...","..KBBBBBBBBBBK..","..KBBKKBBKKBBK..","...KK.KBBK.KK...","......KKKK......","................","................"]},"autotelico":{"label":"Autotélico (anillo)","rows":["................",".....KKKKKK.....","....KKYYYYKK....","...KYYYYYYYYK...","..KYYKK..KKYYK..",".KKYK......KYKK.",".KYYK..YY..KOOK.",".KYY..YWWY..OOK.",".KYY..YWWY..OOK.",".KYYK..YY..KOOK.",".KKYK......KOKK.","..KYYKK..KKOOK..","...KYYOOOOOOK...","....KKOOOOKK....",".....KKKKKK.....","................"]},"asombro":{"label":"Asombro (ojo)","rows":["................","................","..Y.........Y...",".YWY.......YWY..","..Y.........Y...","....KKKKKKKK....","..KKWWWWWWWWKK..",".KWWWKKKKKKWWWK.","KWWWKYWYYYYKWWWK","KWWWKYYKKYYKWWWK","KWWWKOYKKYOKWWWK",".KWWWKOYYOKWWWK.","..KKWWKKKKWWKK..","....KKKKKKKK....","................","................"]},"depende":{"label":"Depende (cruce)","rows":[".......KK.......","......KOOK......",".....KKKKKKKK...",".....KYYYYYYYK..",".....KYYYYYYYYK.",".....KYYYYYYYK..",".....KKKKKKKK...","...KKKKKKKK.....","..KBBBBBBBK.....",".KBBBBBBBBK.....","..KBBBBBBBK.....","...KKKKKKKK.....","......KOOK......","......KOOK......","......KOOK......","....EEEEEEEE...."]},"portador":{"label":"Portador (estatua)","rows":[".....YYYYYY.....","....Y......Y....","...Y..KKKK..Y...","...Y.KLLLGK.Y...","...Y.KLWLGK.Y...","....YKLLGGKY....",".....YKLGKY.....","....KKLLLGKK....","...KLLLLLLGGK...","...KLWLLLLLGK...","...KLLLLLLGGK...","....KKKKKKKK....",".....KGGGGK.....","....KGLLLLGK....","...KKKKKKKKKK...","................"]},"portador_roto":{"label":"Portador roto","rows":[".....YYYYYY.....","....Y......Y....","...Y........Y...","...Y........Y...","...Y........Y...","....Y......Y....",".....YYYYYY.....","................","................","................","..KKK...........",".KLLGK....KKK...",".KLWGK...KLLGK..","..KKKK.KKGLLGKK.","...KKKKKKKKKKK..","................"]},"santo":{"label":"Lo santo","rows":[".......K........","......KYK.......","......KYK...Y...",".....KYWYK......",".....KYWYK......","....KKYWYKK.....",".KKKYYWWWYYKKK..","KYYYYWWWWWYYYYK.",".KKKYYWWWYYKKK..","....KKYWYKK.....",".....KYWYK......",".....KYWYK......","..Y...KYK.......","......KYK.......",".......K........","................"]},"espiritual":{"label":"Valores espirituales","rows":["................",".......Y........","......YWY.......",".KKKKKK..KKKKKK.","KWWWWWWKKWWWWWWK","KWGGGWWKKWWGGGWK","KWWWWWWKKWWWWWWK","KWGGGGWKKWGGGWWK","KWWWWWWKKWWWWWWK","KWGGGWWKKWGGGGWK","KWWWWWWKKWWWWWWK","KccccccKKccccccK",".KKKKKKBBKKKKKK.",".......BB.......","................","................"]},"vital":{"label":"Valores vitales","rows":["................","................","..KKKK....KKKK..",".KRrrRK..KRRRRK.","KRrWrRRKKRRRRRRK","KRrrRRRRRRRRRRRK","KRRRRRWRRRRRRRRK","KWWWWWRWRWWWWWWK",".KRRRRRRWRRRRRK.","..KRRRRRRRRRRK..","...KRRRRRRRRK...","....KRRRRRRK....",".....KRRRRK.....","......KRRK......",".......KK.......","................"]},"agradable":{"label":"Lo agradable","rows":["................",".....L..L.......","......L..L......",".....L..L.......","................","..KKKKKKKKKK....","..KOOOOOOOOK....","..KWyyyyyyyKKK..","..KWyyyyyyyK.K..","..KyyyyyyyyK.K..","..KyyyyyyyGKKK..","...KyyyyyGK.....","....KKKKKK......",".KKKKKKKKKKKK...","..KGGGGGGGGK....","................"]},"durabilidad":{"label":"Durabilidad","rows":["................","..KKKKKKKKKKKK..","..KOOOOOOOOOOK..","..KKKKKKKKKKKK..","...KccYYYYccK...","....KcYYYYcK....",".....KcYYcK.....","......KYYK......","......KcYK......",".....KccYcK.....","....KccYYccK....","...KcYYYYYYcK...","..KKKKKKKKKKKK..","..KOOOOOOOOOOK..","..KKKKKKKKKKKK..","................"]},"indivisible":{"label":"Indivisibilidad","rows":["................","....Y..YY..Y....",".....KKKKKK.....","..Y.KYYYYYYK.Y..","....KYWWYYYK....","..Y.KYYYYYYK.Y..",".....KKKKKK.....","....Y..YY..Y....","................",".KK....KK....KK.","KyyK..KyyK..KyyK","KyyK..KyyK..KyyK",".KK....KK....KK.","KBBK..KEEK..KOOK","KBBK..KEEK..KOOK","KKKK..KKKK..KKKK"]},"fundamento":{"label":"Fundamentación","rows":["................","...KKKKKKKKKK...","...KyyyyyyyyK...","....KKKKKKKK....",".....KyGyGK.....",".....KyGyGK.....",".....KyGyGK.....",".....KyGyGK.....",".....KyGyGK.....",".....KyGyGK.....",".....KyGyGK.....","....KKKKKKKK....","...KyyyyyyyyK...",".KKKKKKKKKKKKKK.",".KOOOOOOOOOOOOK.",".KKKKKKKKKKKKKK."]},"profundidad":{"label":"Profundidad","rows":[".......KK.......","......KbbK......",".....KbWbbK.....","....KbWbbbBK....","....KbbbbbBK....",".....KbbbBK.....","......KKKK......","................",".....BBBBBB.....","...BB......BB...","..B...BBBB...B..","..B..B....B..B..","..B...BBBB...B..","...BB......BB...",".....BBBBBB.....","................"]},"relatividad":{"label":"Relatividad","rows":[".......KK.......","......KWcK......","......KWcK......","......KWcKGG....","......KWcK......","......KRcKGG....","......KRcK......","......KRRKGG....","......KRRK......","......KRRK......",".....KRRRRK.....","....KRrRRRRK....","....KRRRRRRK....",".....KRRRRK.....","......KKKK......","................"]},"torre":{"label":"Torre de Hartmann","rows":[".......YY.......","......YWWY......",".....KYYYYK.....",".....KYyyYK.....","....KKKKKKKK....","....KeeeeeeK....","....KeEeeEeK....","...KKKKKKKKKK...","...KrrrrrrrrK...","...KrRrrrrRrK...","..KKKKKKKKKKKK..","..KBBBBBBBBBBK..","..KBbBBBBBBbBK..","..KBBBBKKBBBBK..",".KKKKKKKKKKKKKK.","................"]},"bosque_uso":{"label":"Bosque · mirada de uso","rows":["cccccccccccccccc","cccccccccccccccc","cccccccccccccccc","cccccccKKKKKcccc","ccccccKOLWLKcccc","ccccccKOLLLKcKcc","ccccccKOGGGKKeKc","ccKcccKOKKKKeEEK","cKeKccKOKccKeEEK","KeEEKcKOKcKeEEEE","KeEEKKKOKKcKeEEK","eEEEKyOOyyKeEEEE","eEEEKOyOOOKeEEEE","KKOKKOOOyOKKKOKK","GGGGGGGGGGGGGGGG","GLGGGGGGGLGGGGGG"]},"bosque_asombro":{"label":"Bosque · mirada de asombro","rows":["yyyWyyyyKyyyyyyy","yyyyyyyKeKyyyWyy","yWyyyyKeEEKyyyyy","yyyyyyKeEEKyyyyy","yyyyyKeEEEEKyyWy","yyyyyyKeEEKyKyyy","yyyyyKeEEEEKeKyy","yyyKKeEEEEKeEEKy","yyKeKKeEEEKeEEKy","yKeEEKEEEKeEEEEK","yKeEEKEEEEKeEEKy","KeEEEEKEEKeEEEEK","KeEEEEKKOKeEEEEK","yKKOKKyKOKKKOKKy","EEEEEEEEEEEEEEEE","EeEEEEEEEeEEEEeE"]},"atardecer":{"label":"Atardecer","rows":["PPPPPPPPPPPPPPPP","PPPPPPPPPPPPPPPP","PPpPPPPPPPPPpPPP","pppppppppppppppp","pnnnnppppppnnnnp","nnnnnnnyynnnnnnn","nnnnnnyWWynnnnnn","NNNNNyWWWWyNNNNN","NNNNyWWWWWWyNNNN","YYYyWWWWWWWWyYYY","PPPPPPPPPPPPPPPP","PPPNNNYYYYNNNPPP","BBBBBBBBBBBBBBBB","BBBBnnnYYnnnBBBB","BBBBBBBBBBBBBBBB","BBBBBBnNNnBBBBBB"]},"martillo":{"label":"Martillo","rows":["................","...KKKKKKKKKK...","..KWLLLLLLLLGK..","..KLLLLLLLLLGGK.","..KGGGGGGGGGGK..","...KKKKYOKKKK...","......KYOK......","......KYOK......","......KYOK......","......KYOK......","......KYOK......","......KYOK......","......KYOK......","......KOOK......",".......KK.......","................"]},"billete":{"label":"Billete","rows":["................","................","................",".KKKKKKKKKKKKKK.",".KeeeeeeeeeeeeK.",".KeEEeeeeeeEEeK.",".KeEeeEEEEeeEeK.",".KeeeEEWWEEeeeK.",".KeeeEEWWEEeeeK.",".KeEeeEEEEeeEeK.",".KeEEeeeeeeEEeK.",".KeeeeeeeeeeeeK.",".KKKKKKKKKKKKKK.","................","................","................"]},"cargador":{"label":"Cargador","rows":["....KK....KK....","....KL....KL....","....KL....KL....","..KKKKKKKKKKKK..","..KbbbbbbbbbbK..","..KbccbbYbbbBK..","..KbcbbYYbbbBK..","..KbbbYbbbbbBK..","...KbbbbbbbBK...","....KBBBBBBK....",".....KKBBKK.....",".......KGK......",".......KGK......","........KGK.....",".........KGK....","..........KK...."]},"estetoscopio":{"label":"Estetoscopio","rows":["..KK......KK....","..KB......KB....","...KB....KB.....","...KB....KB.....","....KB..KB......",".....KBBK.......","......KB........","......KB........",".......KB.......","........KB......",".........KB.....",".........KKKK...","........KLWLLK..","........KLLLGK..",".........KKKK...","................"]},"tarjeta":{"label":"Tarjeta de crédito","rows":["................","................","................",".KKKKKKKKKKKKKK.",".KbbbbbbbbbbbbK.",".KbYYYbbbbbbbbK.",".KbYOYbbbbbbbbK.",".KbYYYbbbbbbbbK.",".KbbbbbbbbbbbbK.",".KbWWbWWbWWbWWK.",".KbbbbbbbbbbbbK.",".KbBBBBbbbbBBbK.",".KKKKKKKKKKKKKK.","................","................","................"]},"paraguas":{"label":"Paraguas","rows":["................",".......K........",".....KKKKK......","...KKBBBBBKK....","..KBBbBBBbBBK...",".KBbBBBbBBBbBK..",".KBBBBBBBBBBBK..",".KKKKKKKKKKKKK..",".......K........",".......K........",".......K........",".......K........",".......K........",".......K..K.....","........KK......","................"]},"gps":{"label":"GPS","rows":[".....KKKKK......","....KRRRRRK.....","...KRrRRRRRK....","...KRRKKKRRK....","...KRRKWKRRK....","...KRRKKKRRK....","...KRRRRRRRK....","....KRRRRRK.....","....KRRRRRK.....",".....KRRRK......",".....KRRRK......","......KRK.......",".......K........","....LLLLLLL.....","................","................"]},"banco":{"label":"Dinero en el banco","rows":["................",".......KK.......",".....KKccKK.....","...KKccccccKK...",".KKccccYYccccKK.","KKKKKKKKKKKKKKKK","..LG.LG..LG.LG..","..LG.LG..LG.LG..","..LG.LG..LG.LG..","..LG.LG..LG.LG..","..LG.LG..LG.LG..","..LG.LG..LG.LG..",".KKKKKKKKKKKKKK.","KGGGGGGGGGGGGGGK","KKKKKKKKKKKKKKKK","................"]},"abrazo":{"label":"Abrazo (corazón)","rows":["................","................","..KKKK....KKKK..",".KRrrRK..KRRRRK.","KRrWrRRKKRRRRRRK","KRrrRRRRRRRRRRRK","KRRRRRRRRRRRRRRK","KRRRRRRRRRRRRRRK",".KRRRRRRRRRRRRK.","..KRRRRRRRRRRK..","...KRRRRRRRRK...","....KRRRRRRK....",".....KRRRRK.....","......KRRK......",".......KK.......","................"]},"poema":{"label":"Poema","rows":["................","..KKKKKKKKKKKK..",".KYyyyyyyyyyyYK.","..KKKKKKKKKKKK..","...KyyyyyyyyK...","...KyGGGGGGyK...","...KyyyyyyyyK...","...KyGGGGyyyK...","...KyyyyyyyyK...","...KyGGGGGyyK...","...KyyyyyyyyK...","...KyGGGyyOyK...","..KKKKKKKKKKKK..",".KYyyyyyyyyyyYK.","..KKKKKKKKKKKK..","................"]},"balanza":{"label":"Balanza","rows":[".......YY.......",".......YO.......","..OOOOOOOOOOOO..","..K....YO....K..",".K.K...YO...K.K.",".K.K...YO...K.K.","K...K..YO..K...K","KKKKK..YO..KKKKK",".KYYK..YO..KYYK.","..KK...YO...KK..",".......YO.......",".......YO.......",".....KYYOOK.....","....KYYYOOOK....","....KKKKKKKK....","................"]},"musica":{"label":"Música","rows":["................","......KKKKKKKK..","......KYYYYYYK..","......KKKKKKKK..","......K......K..","......K......K..","......K......K..","......K......K..","......K......K..","...KKKK...KKKK..","..KYYYK..KYYYK..","..KYWYK..KYWYK..","...KKK....KKK...","................","................","................"]},"verdad":{"label":"Decir la verdad","rows":["..............Y.","..KKKKKKKKKKKK..",".KWWWWWWWWWWWWK.",".KWOOOOOOOOOWWK.",".KWWWWWWWWWWWWK.",".KWOOOOOOWWWWWK.",".KWWWWWWWWWWWWK.",".KWOOOOOOOOWWWK.",".KWWWWWWWWWWWWK.","..KKKWWKKKKKKK..","....KWK.........","....KK..........","................","................","................","................"]},"pan":{"label":"Pan","rows":["................","................","................","................","....KKKKKKKK....","...KyYYYYYYOK...","..KYYyYYyYYyOK..",".KYYYYYYYYYYYOK.",".KYYYYYYYYYYYOK.",".KOYYYYYYYYYOOK.",".KOOOOOOOOOOOOK.","..KKKKKKKKKKKK..","................","................","................","................"]},"plato":{"label":"Plato vacío","rows":["................","................","................","................","................","................","................","................","..KKKKKKKKKKKK..",".KLWWWWWWWWWWLK.","KLWWLLLLLLLLWWLK","KLWWLLLyLLyLWWLK",".KLWWWWWWWWWWLK.","..KKKKKKKKKKKK..","................","................"]},"pan_compartido":{"label":"Pan compartido","rows":["................",".....KK.KK......","....KRrKRRK.....","....KRRRRRK.....",".....KRRRK......","......KRK.......",".......K........","................",".KKKKK....KKKKK.","KYYYYyK..KyYYYYK","KYYYYyK..KyYYYYK","KOYYYyK..KyYYYOK","KOOOOyK..KyOOOOK",".KKKKK....KKKKK.","................","................"]},"diploma":{"label":"Diploma","rows":["................","................","................","................","................","..KKKKKKKKKKKK..",".KWWWWWRRWWWWWK.",".KWWWWWRRWWWWWK.",".KLLLLLRRLLLLLK.","..KKKKKRRKKKKK..","......R..R......",".....R....R.....","................","................","................","................"]},"ok":{"label":"Acierto","rows":["................","................","................","...........KK...","..........KEEK..",".........KEEK...","........KEEK....",".KK....KEEK.....","KEEK..KEEK......",".KEEKKEEK.......","..KEEEEK........","...KEEK.........","....KK..........","................","................","................"]},"error":{"label":"Error","rows":["................","................","..KKK......KKK..","..KRRK....KRRK..","...KRRK..KRRK...","....KRRKKRRK....",".....KRRRRK.....","......KRRK......",".....KRRRRK.....","....KRRKKRRK....","...KRRK..KRRK...","..KRRK....KRRK..","..KKK......KKK..","................","................","................"]},"trofeo":{"label":"Trofeo","rows":["................","...KKKKKKKKKK...","KKKKYWYYYYYOKKKK","KY.KYWYYYYYOK.YK","KY.KYYYYYYYOK.YK",".KYKYYYYYYYOKYK.","..KKYYYYYYYOKK..","....KYYYYYOK....",".....KYYYOK.....","......KYOK......","......KYOK......",".....KKKKKK.....","....KOOOOOOK....","....KKKKKKKK....","................","................"]},"lupa":{"label":"Lupa","rows":["................","...KKKK.........","..KccccK........",".KcWcccbK.......",".KcWcccbK.......",".KcccccbK.......",".KccccbbK.......","..KbbbbK........","...KKKKOK.......",".......KOOK.....","........KOOK....",".........KOOK...","..........KOOK..","...........KK...","................","................"]},"flecha":{"label":"Siguiente","rows":["................","................","................","................","........K.......","........KK......","........KYK.....",".KKKKKKKKYYK....",".KYYYYYYYYYYK...",".KKKKKKKKYYK....","........KYK.....","........KK......","........K.......","................","................","................"]}}};
+const FULL=new Set(SPRITES.fullScenes);
+const pageDark=()=>{const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches};
+function paint(cv){
+  const key=cv.dataset.px,s=SPRITES.sprites[key];if(!s)return;const R=s.rows;
+  const inv=pageDark()&&!FULL.has(key)&&!cv.closest(".keep-light");
+  const line=(x,y)=>R[y][x]==="K"&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X<0||Y<0||X>15||Y>15||R[Y][X]==="."});
+  cv.width=cv.height=16;const c=cv.getContext("2d");c.clearRect(0,0,16,16);
+  R.forEach((r,y)=>[...r].forEach((ch,x)=>{if(ch!=="."){c.fillStyle=(inv&&line(x,y))?SPRITES.lineDark:SPRITES.palette[ch];c.fillRect(x,y,1,1)}}));
+  cv.setAttribute("role","img");cv.setAttribute("aria-label",s.label);
+}
+const paintAll=(root=document)=>root.querySelectorAll("canvas.px").forEach(paint);
+const px=(k,size="m")=>`<canvas class="px px-${size}" data-px="${k}"></canvas>`;
+function setPx(cv,k){cv.dataset.px=k;paint(cv)}
+
+/* ---------- Sonido chiptune (ZzFX) ----------
+   Generador zzfxG copiado sin cambios de ZzFX v1.3.0 — Zuper Zmall Zound Zynth
+   MIT License — Copyright (c) 2019 Frank Force — https://github.com/KilledByAPixel/ZzFX */
 const $=s=>document.querySelector(s);
-const stage=$("#stage"), dotsEl=$("#dots"), countEl=$("#count");
-let step=0, visited=new Set([0]);
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const zzfxV=.3, zzfxR=44100;
+const zzfxG = // generate samples
+(
+    // parameters
+    volume = 1, randomness = .05, frequency = 220, attack = 0, sustain = 0,
+    release = .1, shape = 0, shapeCurve = 1, slide = 0, deltaSlide = 0,
+    pitchJump = 0, pitchJumpTime = 0, repeatTime = 0, noise = 0, modulation = 0,
+    bitCrush = 0, delay = 0, sustainVolume = 1, decay = 0, tremolo = 0, filter = 0
+)=>
+{
+    // init parameters
+    let PI2 = Math.PI*2, sign = v => v<0?-1:1, 
+        startSlide = slide *= 500 * PI2 / zzfxR / zzfxR,
+        startFrequency = frequency *= 
+            (1 + randomness*2*Math.random() - randomness) * PI2 / zzfxR,
+        b=[], t=0, tm=0, i=0, j=1, r=0, c=0, s=0, f, length,
 
+        // biquad LP/HP filter
+        quality = 2, w = PI2 * Math.abs(filter) * 2 / zzfxR,
+        cos = Math.cos(w), alpha = Math.sin(w) / 2 / quality,
+        a0 = 1 + alpha, a1 = -2*cos / a0, a2 = (1 - alpha) / a0,
+        b0 = (1 + sign(filter) * cos) / 2 / a0, 
+        b1 = -(sign(filter) + cos) / a0, b2 = b0,
+        x2 = 0, x1 = 0, y2 = 0, y1 = 0;
+        
+    // scale by sample rate
+    attack = attack * zzfxR + 9; // minimum attack to prevent pop
+    decay *= zzfxR;
+    sustain *= zzfxR;
+    release *= zzfxR;
+    delay *= zzfxR;
+    deltaSlide *= 500 * PI2 / zzfxR**3;
+    modulation *= PI2 / zzfxR;
+    pitchJump *= PI2 / zzfxR;
+    pitchJumpTime *= zzfxR;
+    repeatTime = repeatTime * zzfxR | 0;
+    volume *= zzfxV;
+
+    // generate waveform
+    for(length = attack + decay + sustain + release + delay | 0;
+        i < length; b[i++] = s * volume)               // sample
+    {
+        if (!(++c%(bitCrush*100|0)))                   // bit crush
+        {
+            s = shape? shape>1? shape>2? shape>3?      // wave shape
+                Math.sin(t*t) :                        // 4 noise
+                Math.max(Math.min(Math.tan(t),1),-1):  // 3 tan
+                1-(2*t/PI2%2+2)%2:                     // 2 saw
+                1-4*Math.abs(Math.round(t/PI2)-t/PI2): // 1 triangle
+                Math.sin(t);                           // 0 sin
+
+            s = (repeatTime ?
+                    1 - tremolo + tremolo*Math.sin(PI2*i/repeatTime) // tremolo
+                    : 1) *
+                sign(s)*(Math.abs(s)**shapeCurve) *      // curve
+                (i < attack ? i/attack :                 // attack
+                i < attack + decay ?                     // decay
+                1-((i-attack)/decay)*(1-sustainVolume) : // decay falloff
+                i < attack  + decay + sustain ?          // sustain
+                sustainVolume :                          // sustain volume
+                i < length - delay ?                     // release
+                (length - i - delay)/release *           // release falloff
+                sustainVolume :                          // release volume
+                0);                                      // post release
+
+            s = delay ? s/2 + (delay > i ? 0 :           // delay
+                (i<length-delay? 1 : (length-i)/delay) * // release delay 
+                b[i-delay|0]/2/volume) : s;              // sample delay
+
+            if (filter)                                   // apply filter
+                s = y1 = b2*x2 + b1*(x2=x1) + b0*(x1=s) - a2*y2 - a1*(y2=y1);
+        }
+
+        f = (frequency += slide += deltaSlide) *// frequency
+            Math.cos(modulation*tm++);          // modulation
+        t += f + f*noise*Math.sin(i**5);        // noise
+
+        if (j && ++j > pitchJumpTime)           // pitch jump
+        { 
+            frequency += pitchJump;             // apply pitch jump
+            startFrequency += pitchJump;        // also apply to start
+            j = 0;                              // stop pitch jump time
+        } 
+
+        if (repeatTime && !(++r % repeatTime))  // repeat
+        { 
+            frequency = startFrequency;         // reset frequency
+            slide = startSlide;                 // reset slide
+            j = j || 1;                         // reset pitch jump time
+        }
+    }
+    
+    return b;
+}
+
+const SND={on:load("sonido",true),ctx:null,master:null,lastHover:0,stepNote:-1};
+function ac(){
+  if(!SND.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;SND.ctx=new C();
+    const m=SND.ctx.createGain();m.gain.value=.85;m.connect(SND.ctx.destination);SND.master=m}
+  if(SND.ctx.state==="suspended")SND.ctx.resume().catch(()=>{});return SND.ctx}
+function zz(p,when=0){const c=ac();if(!c)return;const d=zzfxG(...p);if(!d.length)return;
+  const b=c.createBuffer(1,d.length,zzfxR);b.getChannelData(0).set(d);const s=c.createBufferSource();s.buffer=b;s.connect(SND.master);s.start(c.currentTime+when)}
+const N=n=>440*Math.pow(2,(n-69)/12);
+/* nota de 8 bits: shape 3 = pulso áspero, 1 = triángulo (bajo) */
+const nt=(n,len=.1,shape=3,vol=.22,crush=0)=>[vol,0,N(n),.004,len*.35,len*.65,shape,shape===3?2.2:1,0,0,0,0,0,0,0,crush];
+const seq=(notes,step=.08,len=.1,shape=3,vol=.22,t0=0)=>notes.forEach((n,i)=>{if(n!==null)zz(nt(n,len,shape,vol),t0+i*step)});
+const chord=(notes,len=.25,shape=3,vol=.14,t0=0)=>notes.forEach(n=>zz(nt(n,len,shape,vol),t0));
+/* escala pentatónica para la melodía de progreso: cada paso, una nota más alta */
+const PENTA=[60,62,64,67,69,72,74,76,79,81,84];
+
+const SFX={
+  /* interfaz */
+  hover:   ()=>zz([.18,0,2300,,.004,.012,1]),
+  tap:     ()=>zz([.4,0,1250,,.01,.04,1,2]),
+  pick:    ()=>zz([.5,0,620,,.02,.07,1,1.5,,,420,.03]),
+  next:    ()=>zz([.45,0,260,,.05,.1,1,1.6,22]),
+  back:    ()=>zz([.45,0,520,,.05,.1,1,1.6,-22]),
+  sndOn:   ()=>seq([72,79],.06,.08,3,.35),
+  /* objetos útiles / autotélicos */
+  thud:    ()=>{zz([.9,0,95,.004,.05,.2,1,3,-3]);zz([.25,.1,600,,.01,.05,4,1,,,,,,2,,,,,,,-900])},
+  sparkle: ()=>zz([.85,0,1800,,.04,.25,1,1.5,,,600,.04,.08,,,,.07]),
+  /* juego */
+  ok:      (k=0)=>zz([.55,0,1675*Math.pow(2,k/12),,.06,.24,1,1.82,,,837*Math.pow(2,k/12),.06]),
+  bad:     ()=>zz([.55,0,210,.01,.1,.28,3,2,-4,,,,,,,.2]),
+  streak:  ()=>seq([84,88,91,96],.05,.08,3,.38),
+  card:    ()=>{zz([.3,.05,500,,.03,.06,2,1,18,,,,,,,,,,,,1500]);zz([.35,0,900,,.01,.05,1,2],.07)},
+  win:     ()=>{seq([72,76,79,84,null,79,84],.11,.13,3,.2);seq([48,52,55,60,null,55,60],.11,.15,1,.4)},
+  try:     ()=>seq([67,64,62,60],.1,.12,1,.35),
+  /* estatua */
+  shatter: ()=>{zz([1.3,.1,220,.01,.12,.6,4,2.5,,,,,,1.2,,.5,,.35,.15]);zz([.5,0,1200,,.02,.3,4,1,,,,,,3,,.3],.04)},
+  rebuild: ()=>{seq([60,64,67,72,76,79,84],.045,.08,1,.35);zz([.3,0,2000,,.04,.3,1,1.5,,,500,.05,.09],.34)},
+  /* tarjetas */
+  flip:    ()=>zz([.35,.1,700,.005,.03,.09,2,1,6,,,,,4,,,,,,,1400]),
+  unlock:  ()=>{seq([76,79,84,88],.07,.1,3,.18);chord([64,72,76],.4,1,.25,.3)},
+  tick:    ()=>zz([.3,0,1500,,.005,.02,2]),
+  /* bosque */
+  chop:    ()=>{zz([.7,0,140,.002,.03,.15,4,1,-8,,,,,1.5,,.4]);zz([.6,.02,420,,.01,.06,3,1,,,,,,,,.3],.02)},
+  birds:   ()=>{zz([.6,0,2400,,.06,.08,0,1,40,,,,,,25],0);zz([.55,0,2800,,.05,.07,0,1,-30,,,,,,30],.16);zz([.5,0,2600,,.04,.06,0,1,35],.3)},
+  /* escalera de Scheler: un jingle por estrato */
+  r_util:     ()=>{zz([.4,0,900,,.005,.03,3,1,,,,,,,,.4]);zz([.4,0,700,,.005,.03,3,1,,,,,,,,.4],.09)},
+  r_agradable:()=>seq([57,60,64],.12,.22,1,.38),
+  r_vital:    ()=>{zz([.9,0,80,.005,.04,.12,1,3,-2]);zz([.7,0,80,.005,.04,.12,1,3,-2],.14)},
+  r_espiritual:()=>seq([67,71,74,79],.08,.14,3,.34),
+  r_santo:    ()=>{seq([84,91,96],.12,.35,1,.3);zz([.22,0,N(103),,.05,.6,1,1,,,,,,,,,.15],.36)},
+  /* progreso y final */
+  levelUp: (i=0)=>zz(nt(PENTA[Math.min(i,PENTA.length-1)],.16,1,.5),.09),
+  finish:  ()=>{seq([60,64,67,72,64,67,72,76,67,72,76,79,84],.075,.09,3,.17);seq([36,null,null,40,null,null,43,null,null,48],.075,.2,1,.45);chord([72,76,79,84],.6,1,.2,1.0)}
+};
+function zzOn(f){if(SND.on)try{f()}catch(e){}}
+function play(k,arg){if(!SND.on||!SFX[k])return;try{SFX[k](arg)}catch(e){}}
+const sndBtn=$("#snd");
+function sndUI(){sndBtn.setAttribute("aria-pressed",SND.on);sndBtn.textContent=SND.on?"♪ Sonido":"♪ Silencio"}
+sndBtn.onclick=()=>{SND.on=!SND.on;save("sonido",SND.on);sndUI();if(SND.on)play("sndOn")};sndUI();
+/* sonido al pasar el ratón (solo con ratón, no en pantallas táctiles) */
+const canHover=matchMedia("(hover: hover) and (pointer: fine)").matches;
+let hoverEl=null;
+document.addEventListener("pointerover",e=>{if(!canHover)return;
+  const el=e.target.closest(".tile,.rung,.chip,.flip,.choices button,.pc,.switch button,.btn:not(:disabled),.dots button,.sfx-row button");
+  if(!el||el===hoverEl)return;hoverEl=el;const t=performance.now();if(t-SND.lastHover<45)return;SND.lastHover=t;play("hover")});
+document.addEventListener("pointerout",e=>{if(hoverEl&&!hoverEl.contains(e.relatedTarget))hoverEl=null});
+
+/* ---------- Helpers de UI ---------- */
+function tiles(box,list,onPick,cls=""){
+  list.forEach(it=>{const b=document.createElement("button");b.className="tile "+(it.tone?"t-"+it.tone:"")+" "+cls;b.setAttribute("aria-pressed","false");
+    b.innerHTML=`<div class="sq">${px(it.px,"l")}</div><span>${it.name}</span>`;
+    b.onclick=()=>{box.querySelectorAll(".tile").forEach(t=>t.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");onPick(it,b)};box.appendChild(b)});
+  paintAll(box)}
+function say(el,cls,icon,html){el.className="answer "+cls;el.innerHTML=(icon?px(icon,"s"):"")+`<div>${html}</div>`;paintAll(el)}
+
+/* ---------- Pasos ---------- */
+const stage=$("#stage"),dotsEl=$("#dots"),countEl=$("#count");
+let step=0,visited=new Set([0]);
 const STEPS=[
-/* 1 */ {name:"La gran pregunta",min:1,html:`
-  <span class="kicker">Paso 1 · La gran pregunta</span>
-  <h1>Las cosas valen de <span class="u">dos</span> maneras</h1>
-  <div class="duo">
-    <div class="side u"><strong>Vale PARA algo</strong><span>Instrumental. Es un medio.</span><span class="de">Folgewert</span></div>
-    <div class="side w"><strong>Vale POR sí mismo</strong><span>Autotélico. Es un fin.</span><span class="de">Selbstwert</span></div>
+/* 0 */ {name:"¿Qué es un valor?",min:1,html:`
+  <span class="kicker">Paso 1 · Antes de empezar</span>
+  <h1>¿Qué es un <span class="w">valor</span>?</h1>
+  <p class="big">Un valor es lo que hace que algo <b>no te dé igual</b>.</p>
+  <p>Mira la misma taza de dos formas. Toca cada una:</p>
+  <div class="pair">
+    <button class="pc" id="pc-h" aria-pressed="false">${px("agradable","m")}<span class="lab">Hecho</span><q>Esta taza es de cerámica.</q></button>
+    <button class="pc" id="pc-v" aria-pressed="false">${px("abrazo","m")}<span class="lab">Valor</span><q>Esta taza era de mi abuela.</q></button>
   </div>
-  <p class="big">Toca un ejemplo y mira de qué lado cae:</p>
-  <div class="chips" id="s1chips"></div>
-  <div class="answer" id="s1ans">Elige un ejemplo de arriba.</div>
-  <div class="tip">Autotélico viene del griego: <b>autós</b> (uno mismo) + <b>telos</b> (fin). Su fin está dentro.</div>`,
+  <div class="answer" id="s0ans"><div>Elige una frase.</div></div>
+  <div class="why">${px("lupa","s")}<p><b>¿Para qué sirve saber esto?</b> Para no tratar como herramienta lo que vale por sí mismo, como una persona o un bosque, ni tratar como sagrado lo que solo es herramienta, como el dinero.</p></div>`,
   init(){
-    const ex=[["Un martillo","u","Vale para clavar. Sin clavos que clavar, no le queda valor."],
-              ["Un atardecer","w","No sirve para nada y aun así lo miras. Vale por sí mismo."],
-              ["Un billete","u","Es un símbolo: vale por lo que permite comprar."],
-              ["Un abrazo sincero","w","No lo das para conseguir otra cosa. Su sentido está en él."],
-              ["Un cargador","u","Vale porque el móvil vale. Valor prestado."]];
-    const box=$("#s1chips"),ans=$("#s1ans");
-    ex.forEach(([t,k,why])=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed","false");
-      b.onclick=()=>{box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
-        ans.className="answer "+k;ans.innerHTML=`<b>${k==="u"?"Vale PARA algo":"Vale POR sí mismo"}.</b> ${why}`};box.appendChild(b)});
+    const a=$("#s0ans"),h=$("#pc-h"),v=$("#pc-v");
+    h.onclick=()=>{play("thud");h.setAttribute("aria-pressed","true");v.setAttribute("aria-pressed","false");
+      say(a,"u","",`<b>Un hecho</b> dice qué es la taza. A nadie le importa más o menos por saberlo.`)};
+    v.onclick=()=>{play("sparkle");v.setAttribute("aria-pressed","true");h.setAttribute("aria-pressed","false");
+      say(a,"w","",`<b>Un valor</b> dice cuánto importa. La cerámica es la misma, pero ya no te da igual romperla.`)};
+  }},
+/* 1 */ {name:"Dos maneras de valer",min:1,html:`
+  <span class="kicker">Paso 2 · La gran pregunta</span>
+  <h2>Las cosas valen de <span class="u">dos</span> maneras</h2>
+  <div class="duo">
+    <div class="side u">${px("util","m")}<strong>Vale PARA algo</strong><span>Instrumental · un medio</span></div>
+    <div class="side w">${px("autotelico","m")}<strong>Vale POR sí mismo</strong><span>Autotélico · un fin</span></div>
+  </div>
+  <p>Toca un objeto y mira de qué lado cae:</p>
+  <div class="tiles" id="s1t"></div>
+  <div class="answer" id="s1ans"><div>Elige un objeto.</div></div>
+  <div class="tip"><b>Autotélico</b> viene del griego <i>autós</i> (uno mismo) + <i>telos</i> (fin): su fin está dentro.</div>`,
+  init(){
+    const ex=[{px:"martillo",name:"Martillo",k:"u",why:"Vale para clavar. Sin clavos, no le queda valor."},
+              {px:"atardecer",name:"Atardecer",k:"w",why:"No sirve para nada y aun así lo miras."},
+              {px:"billete",name:"Billete",k:"u",why:"Vale por lo que permite comprar."},
+              {px:"abrazo",name:"Abrazo",k:"w",why:"No lo das para conseguir otra cosa."},
+              {px:"cargador",name:"Cargador",k:"u",why:"Vale porque el móvil vale."}];
+    const a=$("#s1ans");
+    tiles($("#s1t"),ex,it=>{play(it.k==="u"?"thud":"sparkle");
+      say(a,it.k,it.k==="u"?"util":"autotelico",`<b>${it.k==="u"?"Vale PARA algo.":"Vale POR sí mismo."}</b> ${it.why}`)});
   }},
 /* 2 */ {name:"Valor y portador",min:1,html:`
-  <span class="kicker">Paso 2 · Valor y portador</span>
+  <span class="kicker">Paso 3 · Valor y portador</span>
   <h2>El objeto <span class="u">no es</span> el valor</h2>
-  <p class="big">El objeto es solo el <span class="hl-u">portador</span> <span class="de">(Wertträger)</span>. El valor es la cualidad que brilla a través de él.</p>
-  <div class="statue-box">
-    <svg id="statue" viewBox="0 0 160 200" role="img" aria-label="Estatua con un halo que representa la belleza">
-      <circle class="glow" id="glow" cx="80" cy="55" r="48" fill="var(--wonder-soft)" stroke="var(--wonder)" stroke-width="2" stroke-dasharray="4 5"/>
-      <g class="piece p1"><circle cx="80" cy="50" r="18" fill="var(--muted)"/></g>
-      <g class="piece p2"><rect x="62" y="70" width="36" height="58" rx="8" fill="var(--muted)"/></g>
-      <g class="piece p3"><rect x="54" y="128" width="52" height="16" rx="3" fill="var(--muted)"/></g>
-      <rect x="40" y="184" width="80" height="8" rx="2" fill="var(--line)"/>
-    </svg>
-  </div>
-  <div class="chips"><button class="btn" id="breakBtn">Romper la estatua</button></div>
-  <div class="answer" id="s2ans">El halo dorado es la <b>belleza</b>. La piedra es su portador.</div>
-  <details><summary>Más a fondo</summary><p>Hermann Lotze lo resumió así: los valores no <i>son</i>, <i>valen</i>. Nicolai Hartmann sitúa los valores en el ser ideal (atemporal) y los portadores en el ser real (temporal). Por eso un valor puede seguir valiendo aunque su portador desaparezca.</p></details>`,
+  <p class="big">El objeto es el <span class="hl-u">portador</span>. El valor es la cualidad que brilla en él.</p>
+  <div class="statue-box" id="sbox">${px("portador","xl")}</div>
+  <button class="btn wide" id="breakBtn">Romper la estatua</button>
+  <div class="answer" id="s2ans"><div>El halo dorado es la <b>belleza</b>. La piedra es su portador.</div></div>
+  <details><summary>${px("lupa","xs")}Más a fondo</summary><p>Hermann Lotze lo resumió así: los valores no <i>son</i>, <i>valen</i>. Nicolai Hartmann sitúa los valores en el ser ideal (atemporal) y los portadores en el ser real (temporal). <span class="de">Wertträger</span> = portador.</p></details>`,
   init(){
-    let broken=false;const svg=$("#statue"),btn=$("#breakBtn"),ans=$("#s2ans");
-    btn.onclick=()=>{broken=!broken;svg.classList.toggle("broken",broken);
+    let broken=false;const box=$("#sbox"),cv=box.querySelector("canvas"),btn=$("#breakBtn"),a=$("#s2ans");
+    btn.onclick=()=>{broken=!broken;setPx(cv,broken?"portador_roto":"portador");
+      if(broken){play("shatter");box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake")}else play("rebuild");
       btn.textContent=broken?"Reconstruir":"Romper la estatua";
-      ans.className="answer "+(broken?"w":"");
-      ans.innerHTML=broken?"<b>La piedra se rompió.</b> ¿La belleza dejó de ser belleza? Para Scheler y Hartmann, no: se perdió el portador, no el valor.":"El halo dorado es la <b>belleza</b>. La piedra es su portador."};
+      say(a,broken?"w":"","",broken?"<b>La piedra se rompió.</b> El halo sigue ahí: se perdió el portador, no la belleza.":"El halo dorado es la <b>belleza</b>. La piedra es su portador.")};
   }},
 /* 3 */ {name:"La prueba de la resta",min:1,html:`
-  <span class="kicker">Paso 3 · Tu herramienta</span>
+  <span class="kicker">Paso 4 · Tu herramienta</span>
   <h2>La prueba de <span class="w">la resta</span></h2>
-  <p class="big">Quita mentalmente el fin al que sirve algo. <b>¿Le queda valor?</b></p>
-  <div class="chips" id="s3chips"></div>
-  <button class="btn" id="subBtn" disabled>Quitar su fin</button>
-  <div class="answer" id="s3ans">Elige un objeto primero.</div>
-  <div class="tip">Si no le queda nada, era <span class="hl-u">instrumental</span>. Si sigue valiendo, es <span class="hl-w">autotélico</span>.</div>`,
+  <p class="big">Quita el fin al que sirve algo. <b>¿Le queda valor?</b></p>
+  <div class="tiles four" id="s3t"></div>
+  <button class="btn wide" id="subBtn" disabled>Quitar su fin</button>
+  <div class="answer" id="s3ans"><div>Elige un objeto primero.</div></div>
+  <div class="tip">No le queda nada → <span class="hl-u">instrumental</span>. Sigue valiendo → <span class="hl-w">autotélico</span>.</div>`,
   init(){
-    const items=[["Estetoscopio","Sin medicina que ejercer…","u","…es un tubo de goma y metal. Su valor era la salud que ayudaba a cuidar."],
-                 ["Tarjeta de crédito","Sin nada que comprar…","u","…es un trozo de plástico. Valor simbólico, totalmente prestado."],
-                 ["Un poema que te conmueve","Sin examen ni premio…","w","…sigue conmoviéndote. Su valor no dependía de servir para algo."],
-                 ["Defender a un inocente","Sin recompensa ni aplauso…","w","…sigue siendo justo. La justicia vale por su propia dignidad."]];
-    let cur=null;const box=$("#s3chips"),btn=$("#subBtn"),ans=$("#s3ans");
-    items.forEach(it=>{const b=document.createElement("button");b.className="chip";b.textContent=it[0];b.setAttribute("aria-pressed","false");
-      b.onclick=()=>{cur=it;box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
-        btn.disabled=false;ans.className="answer";ans.textContent=it[1]};box.appendChild(b)});
-    btn.onclick=()=>{if(!cur)return;ans.className="answer "+cur[2];
-      ans.innerHTML=`${cur[1].replace(/…$/,"")}, ${cur[3].replace(/^…/,"")} <b>→ ${cur[2]==="u"?"Instrumental":"Autotélico"}</b>`};
+    const items=[{px:"estetoscopio",name:"Estetoscopio",k:"u",q:"Sin medicina que ejercer",r:"es goma y metal. Su valor era la salud."},
+                 {px:"tarjeta",name:"Tarjeta",k:"u",q:"Sin nada que comprar",r:"es un trozo de plástico."},
+                 {px:"poema",name:"Poema",k:"w",q:"Sin examen ni premio",r:"sigue conmoviéndote."},
+                 {px:"balanza",name:"Defender a un inocente",k:"w",q:"Sin recompensa ni aplauso",r:"sigue siendo justo."}];
+    let cur=null;const btn=$("#subBtn"),a=$("#s3ans");
+    tiles($("#s3t"),items,it=>{play("pick");cur=it;btn.disabled=false;say(a,"","",`${it.q}…`)},"mystery");
+    btn.onclick=()=>{if(!cur)return;play(cur.k==="u"?"thud":"sparkle");
+      say(a,cur.k,cur.k==="u"?"util":"autotelico",`${cur.q}, ${cur.r} <b>→ ${cur.k==="u"?"Instrumental":"Autotélico"}</b>`)};
   }},
 /* 4 */ {name:"La escalera de Scheler",min:1,html:`
-  <span class="kicker">Paso 4 · Max Scheler</span>
+  <span class="kicker">Paso 5 · Max Scheler</span>
   <h2>Los valores tienen <span class="w">altura</span></h2>
-  <p>Scheler ordena los valores en una escalera. Toca cada escalón.</p>
+  <p>Scheler los ordena en una escalera. Toca cada escalón.</p>
   <div class="ladder" id="ladder"></div>
   <div class="answer" id="s4ans"></div>`,
   init(){
-    const R=[["s4","Lo santo","IV","Lo absoluto. Se capta en el amor y la adoración. Ejemplo: lo sagrado para un creyente."],
-             ["s3","Espirituales","III","Belleza, justicia, verdad. Ejemplo: una obra de arte, una sentencia justa, una demostración."],
-             ["s2","Vitales","II","Salud, vigor, nobleza. Ejemplo: sentirse sano y con energía."],
-             ["s1","Agradables","I","Placer y confort sensibles. Ejemplo: un baño caliente."],
-             ["s0","Lo útil","base","No tiene escalón propio. Sirve a los de arriba: vale porque lleva a lo agradable o a lo vital. Su valor es <b>prestado</b>."]];
-    const box=$("#ladder"),ans=$("#s4ans");
-    const pick=(r,b)=>{box.querySelectorAll(".rung").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
-      ans.className="answer "+(r[0]==="s0"?"u":"w");ans.innerHTML=`<b>${r[1]}.</b> ${r[3]}`};
-    R.forEach(r=>{const b=document.createElement("button");b.className="rung "+r[0];b.innerHTML=`<b>${r[1]}</b><span class="n">${r[2]}</span>`;
+    const R=[["s4","santo","Lo santo","IV","Lo absoluto. Se capta en el amor y la adoración."],
+             ["s3","espiritual","Espirituales","III","Belleza, justicia, verdad: una obra de arte, una sentencia justa."],
+             ["s2","vital","Vitales","II","Salud, vigor, nobleza: sentirse sano y con energía."],
+             ["s1","agradable","Agradables","I","Placer y confort: un baño caliente."],
+             ["s0","util","Lo útil","base","No tiene escalón propio. Sirve a los de arriba: su valor es <b>prestado</b>."]];
+    const box=$("#ladder"),a=$("#s4ans");
+    const pick=(r,b,quiet)=>{if(!quiet)play("r_"+r[1]);box.querySelectorAll(".rung").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+      say(a,r[0]==="s0"?"u":"w",r[1],`<b>${r[2]}.</b> ${r[4]}`)};
+    R.forEach(r=>{const b=document.createElement("button");b.className="rung "+r[0];b.innerHTML=`${px(r[1],"s")}<b>${r[2]}</b><span class="n">${r[3]}</span>`;
       b.setAttribute("aria-pressed","false");b.onclick=()=>pick(r,b);box.appendChild(b)});
-    pick(R[4],box.lastChild);
+    paintAll(box);pick(R[4],box.lastChild,true);
   }},
 /* 5 */ {name:"Cinco criterios",min:2,html:`
-  <span class="kicker">Paso 5 · Medir la altura</span>
+  <span class="kicker">Paso 6 · Medir la altura</span>
   <h2>5 preguntas para <span class="w">medir</span> un valor</h2>
-  <p>Toca cada tarjeta para ver cómo responden lo útil y lo autotélico.</p>
+  <p>Toca cada tarjeta para darle la vuelta.</p>
   <div class="flips" id="flips"></div>
   <p class="muted" id="flipCount"></p>`,
   init(){
-    const C=[["Durabilidad","¿Dura o se gasta?","Se gasta o queda obsoleto.","Permanece aunque cambie el portador."],
-             ["Indivisibilidad","¿Hay que repartirlo?","Si lo uso yo, no lo usas tú.","Muchos lo disfrutan a la vez sin agotarlo."],
-             ["Fundamentación","¿Depende o sostiene?","Depende de un fin ajeno.","Da sentido a los medios."],
-             ["Profundidad","¿Qué tan hondo llena?","Alivio o confort superficial.","Plenitud en el centro de la persona."],
-             ["Relatividad","¿Depende del cuerpo o del momento?","Mucho: cambia con el estado físico.","Poco: se vive como algo absoluto."]];
+    const C=[["durabilidad","Durabilidad","¿Dura o se gasta?","Se gasta o queda obsoleto.","Permanece aunque cambie el portador."],
+             ["indivisible","Indivisibilidad","¿Hay que repartirlo?","Si lo uso yo, no lo usas tú.","Muchos lo gozan a la vez."],
+             ["fundamento","Fundamentación","¿Depende o sostiene?","Depende de un fin ajeno.","Da sentido a los medios."],
+             ["profundidad","Profundidad","¿Qué tan hondo llena?","Alivio superficial.","Plenitud en el centro de la persona."],
+             ["relatividad","Relatividad","¿Cambia con el cuerpo o el momento?","Mucho.","Poco: se vive como absoluto."]];
     const box=$("#flips"),cnt=$("#flipCount");const seen=new Set();
-    const upd=()=>cnt.textContent=seen.size===5?"✓ Las 5 revisadas. Cuanto más se parece un valor a la línea «asombro», más alto es.":`${seen.size} de 5 revisadas`;
+    const upd=()=>{cnt.textContent=seen.size===5?"✓ Las 5 revisadas. Cuanto más se parece a la línea «asombro», más alto es el valor.":`${seen.size} de 5 revisadas`};
     C.forEach((c,i)=>{const b=document.createElement("button");b.className="flip";b.setAttribute("aria-expanded","false");
-      const front=`<strong>${c[0]}</strong><span class="q">${c[1]}</span><span class="tag">toca para ver</span>`;
-      const back=`<strong>${c[0]}</strong><div class="back"><span><span class="hl-u">útil</span> ${c[2]}</span><span><span class="hl-w">asombro</span> ${c[3]}</span></div>`;
-      b.innerHTML=front;b.onclick=()=>{const on=!b.classList.contains("on");b.classList.toggle("on",on);b.setAttribute("aria-expanded",on);b.innerHTML=on?back:front;if(on)seen.add(i);upd()};
-      box.appendChild(b)});upd();
+      const head=`<span class="fh">${px(c[0],"s")}<strong>${c[1]}</strong></span>`;
+      const front=`${head}<span class="q">${c[2]}</span><span class="tag">toca para ver</span>`;
+      const back=`${head}<div class="back"><span><span class="hl-u">útil</span> ${c[3]}</span><span><span class="hl-w">asombro</span> ${c[4]}</span></div>`;
+      b.innerHTML=front;b.onclick=()=>{const on=!b.classList.contains("on");play("flip");b.classList.toggle("on",on);b.setAttribute("aria-expanded",on);b.innerHTML=on?back:front;paintAll(b);
+        if(on){const was=seen.size;seen.add(i);if(seen.size===5&&was<5)setTimeout(()=>play("unlock"),180)}upd()};
+      box.appendChild(b)});paintAll(box);upd();
   }},
 /* 6 */ {name:"Lo fuerte y lo alto",min:1,html:`
-  <span class="kicker">Paso 6 · Nicolai Hartmann</span>
+  <span class="kicker">Paso 7 · Nicolai Hartmann</span>
   <h2>Lo más <span class="w">alto</span> es lo más <span class="u">frágil</span></h2>
+  <div class="hart">${px("torre","l")}
   <div class="tower">
-    <div class="tower-head"><span></span><span>fuerza (sostiene)</span><span>altura (vale)</span></div>
+    <div class="tower-head"><span></span><span>fuerza</span><span>altura</span></div>
     <div class="floor"><span class="lab">Espíritu</span><span class="meterbar f-str"><i style="width:20%"></i></span><span class="meterbar f-hi"><i style="width:100%"></i></span></div>
     <div class="floor"><span class="lab">Alma</span><span class="meterbar f-str"><i style="width:45%"></i></span><span class="meterbar f-hi"><i style="width:70%"></i></span></div>
     <div class="floor"><span class="lab">Vida</span><span class="meterbar f-str"><i style="width:70%"></i></span><span class="meterbar f-hi"><i style="width:40%"></i></span></div>
     <div class="floor"><span class="lab">Materia</span><span class="meterbar f-str"><i style="width:100%"></i></span><span class="meterbar f-hi"><i style="width:10%"></i></span></div>
-  </div>
+  </div></div>
   <p class="big">Como un edificio: los pisos de abajo cargan con todo, pero la vista está arriba.</p>
-  <div class="tip">Lo útil <b>no compite</b> con lo autotélico: lo <b>sostiene</b>. Sin lienzo no hay Guernica; sin tribunales no hay justicia que se cumpla.</div>
-  <details><summary>Más a fondo</summary><p>Es la ley de dependencia categorial: los estratos inferiores son ontológicamente más fuertes pero axiológicamente neutros. Hartmann ve a la persona como un «puente teleológico»: capta la exigencia de un valor (Tun-Sollen) y la lleva a la realidad usando medios.</p></details>`,
+  <div class="tip">Lo útil <b>no compite</b> con lo autotélico: lo <b>sostiene</b>. Sin lienzo no hay cuadro; sin tribunales no hay justicia.</div>
+  <details><summary>${px("lupa","xs")}Más a fondo</summary><p>Es la ley de dependencia categorial: los estratos inferiores son más fuertes pero neutros en valor. Hartmann ve a la persona como un «puente teleológico» que lleva los valores a la realidad usando medios.</p></details>`,
   init(){}},
 /* 7 */ {name:"Dos miradas",min:1,html:`
-  <span class="kicker">Paso 7 · El asombro</span>
+  <span class="kicker">Paso 8 · El asombro</span>
   <h2>El mismo bosque, <span class="w">dos miradas</span></h2>
   <div class="switch" role="group" aria-label="Elegir mirada"><button id="m-u" aria-pressed="true">Mirada de uso</button><button id="m-w" aria-pressed="false">Mirada de asombro</button></div>
   <div class="scene u" id="scene"></div>
-  <p class="big">El asombro no añade valor a las cosas: <b>quita el «para qué»</b> que no nos dejaba verlo.</p>
+  <p class="big">El asombro no añade valor: <b>quita el «para qué»</b> que no nos dejaba verlo.</p>
   <div class="voices">
-    <div class="voice"><b>Scheler</b>El asombro y la reverencia frente al afán moderno de dominar.</div>
-    <div class="voice"><b>Antonio Caso</b>La vida como economía frente a la vida como desinterés: el arte «derrocha».</div>
-    <div class="voice"><b>Deustua</b>Lo bello es una finalidad sin fin: libera de lo utilitario.</div>
-    <div class="voice"><b>Romero</b>El «interés desinteresado»: respetar las cosas tal como son.</div>
+    <div class="voice"><b>Scheler</b>Asombro y reverencia frente al afán de dominar.</div>
+    <div class="voice"><b>Antonio Caso</b>La vida como economía o como desinterés: el arte «derrocha».</div>
+    <div class="voice"><b>Deustua</b>Lo bello es una finalidad sin fin.</div>
+    <div class="voice"><b>Romero</b>El «interés desinteresado»: respetar las cosas como son.</div>
   </div>`,
   init(){
-    const V={u:["<b>Lo que ves:</b>","300 m³ de madera aprovechable","Terreno para urbanizar","Leña para el invierno"],
-             w:["<b>Lo que ves:</b>","La luz filtrándose entre las hojas","Un silencio que no se compra","Árboles más viejos que tu familia"]};
+    const V={u:["bosque_uso","300 m³ de madera","Terreno para urbanizar","Leña para el invierno"],
+             w:["bosque_asombro","La luz entre los pinos","Un silencio que no se compra","Árboles más viejos que tu familia"]};
     const sc=$("#scene"),bu=$("#m-u"),bw=$("#m-w");
-    const set=k=>{sc.className="scene "+k;sc.innerHTML=V[k][0]+"<ul>"+V[k].slice(1).map(x=>`<li>${x}</li>`).join("")+"</ul>";
+    const set=(k,quiet)=>{if(!quiet)play(k==="u"?"chop":"birds");sc.className="scene "+k;sc.innerHTML=px(V[k][0],"l")+"<ul>"+V[k].slice(1).map(x=>`<li>${x}</li>`).join("")+"</ul>";paintAll(sc);
       bu.setAttribute("aria-pressed",k==="u");bw.setAttribute("aria-pressed",k==="w")};
-    bu.onclick=()=>set("u");bw.onclick=()=>set("w");set("u");
+    bu.onclick=()=>set("u");bw.onclick=()=>set("w");set("u",true);
   }},
 /* 8 */ {name:"Juego: clasifica",min:2,html:`
-  <span class="kicker">Paso 8 · Practica</span>
+  <span class="kicker">Paso 9 · Practica</span>
   <h2>¿Útil, autotélico o <span class="d">depende</span>?</h2>
   <div class="score"><span id="gProg"></span><span id="gScore"></span></div>
-  <div class="game-item" id="gItem"></div>
+  <div class="game-card"><div class="sq" id="gSq"><canvas class="px px-l" id="gPx" data-px="paraguas"></canvas></div><div class="game-item" id="gItem"></div></div>
   <div class="choices" id="gChoices">
-    <button class="cu" data-k="u">Útil</button><button class="cw" data-k="w">Autotélico</button><button class="cd" data-k="d">Depende</button>
+    <button class="cu" data-k="u">${px("util","s")}Útil</button><button class="cw" data-k="w">${px("autotelico","s")}Autotélico</button><button class="cd" data-k="d">${px("depende","s")}Depende</button>
   </div>
-  <div class="answer" id="gAns">Usa la prueba de la resta.</div>
+  <div class="answer" id="gAns"><div>Usa la prueba de la resta.</div></div>
   <button class="btn wide" id="gNext" disabled>Otro ejemplo →</button>`,
   init(){
-    const G=[["Un paraguas","u","Sin lluvia no le queda valor. Medio puro."],
-             ["Escuchar tu sinfonía favorita","w","No la escuchas para otra cosa. Vale en sí."],
-             ["Un GPS","u","Vale porque llegar a un sitio vale."],
-             ["Decir la verdad cuando cuesta","w","La veracidad vale aunque no te dé ventaja."],
-             ["Un pan","d","Confort para quien está lleno, vida para quien tiene hambre. Lo verás en el paso 9."],
-             ["Contemplar un amanecer","w","Ningún fin ulterior: el puro asombro."],
-             ["Un diploma","d","Puede ser medio para un empleo o reconocimiento de un saber que vale por sí. Depende de para quién."],
-             ["Dinero en el banco","u","Valor simbólico: vale por lo que permite."]];
-    let i=0,score=0,answered=false;const item=$("#gItem"),ans=$("#gAns"),nx=$("#gNext"),pr=$("#gProg"),scEl=$("#gScore");
-    const names={u:"Útil",w:"Autotélico",d:"Depende"};
-    const show=()=>{answered=false;nx.disabled=true;item.textContent=G[i][0];pr.textContent=`${i+1} / ${G.length}`;scEl.textContent=`aciertos: ${score}`;
-      ans.className="answer";ans.textContent="Usa la prueba de la resta.";};
+    const G=[["paraguas","Un paraguas","u","Sin lluvia no le queda valor."],
+             ["musica","Tu canción favorita","w","No la escuchas para otra cosa."],
+             ["gps","Un GPS","u","Vale porque llegar a un sitio vale."],
+             ["verdad","Decir la verdad cuando cuesta","w","La veracidad vale aunque no te dé ventaja."],
+             ["pan","Un pan","d","Confort si estás lleno, vida si tienes hambre. Lo verás en el paso 10."],
+             ["atardecer","Mirar un amanecer","w","Ningún fin ulterior: puro asombro."],
+             ["diploma","Un diploma","d","Medio para un empleo o prueba de un saber que vale por sí. Depende de para quién."],
+             ["banco","Dinero en el banco","u","Valor prestado: vale por lo que permite."]];
+    let i=0,score=0,answered=false,streak=0;const item=$("#gItem"),a=$("#gAns"),nx=$("#gNext"),pr=$("#gProg"),scEl=$("#gScore"),cv=$("#gPx"),sq=$("#gSq");
+    const names={u:"Útil",w:"Autotélico",d:"Depende"},icon={u:"util",w:"autotelico",d:"depende"};
+    const show=()=>{answered=false;nx.disabled=true;nx.textContent="Otro ejemplo →";setPx(cv,G[i][0]);item.textContent=G[i][1];
+      sq.classList.remove("pop");void sq.offsetWidth;sq.classList.add("pop");
+      pr.textContent=`${i+1} / ${G.length}`;scEl.textContent=`aciertos: ${score}`+(streak>=2?` · racha ×${streak}`:"");say(a,"","","Usa la prueba de la resta.")};
     $("#gChoices").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(answered)return;answered=true;
-      const ok=b.dataset.k===G[i][1];if(ok)score++;scEl.textContent=`aciertos: ${score}`;
-      ans.className="answer "+(ok?"ok":"bad");ans.innerHTML=`<b>${ok?"¡Bien!":"Casi."}</b> Es <b>${names[G[i][1]]}</b>. ${G[i][2]}`;
+      const ok=b.dataset.k===G[i][2];if(ok){score++;streak++;play("ok",(streak-1)*2);if(streak>=3)setTimeout(()=>play("streak"),260)}else{streak=0;play("bad")}
+      scEl.textContent=`aciertos: ${score}`+(streak>=2?` · racha ×${streak}`:"");
+      say(a,ok?"ok":"bad",ok?"ok":"error",`<b>${ok?"¡Bien!":"Casi."}</b> Es <b>${names[G[i][2]]}</b>. ${G[i][3]}`);
       nx.disabled=false;nx.textContent=i===G.length-1?"Ver resultado":"Otro ejemplo →"});
-    nx.onclick=()=>{if(i<G.length-1){i++;show()}else{item.innerHTML=`<span class="confetti">${score} de ${G.length}</span>`;
-      ans.className="answer w";ans.innerHTML=score>=6?"<b>¡Lo tienes!</b> Ya distingues los dos modos de valer.":"<b>Buen intento.</b> Repasa la prueba de la resta y vuelve a jugar.";
-      nx.textContent="Jugar otra vez";nx.onclick=()=>{i=0;score=0;show();nx.onclick=null;STEPS[7].init()}}};
+    nx.onclick=()=>{
+      if(nx.dataset.done){delete nx.dataset.done;i=0;score=0;streak=0;play("pick");show();return}
+      if(i<G.length-1){i++;play("card");show();return}
+      setPx(cv,"trofeo");sq.classList.remove("pop");void sq.offsetWidth;sq.classList.add("pop");
+      item.innerHTML=`<span class="final">${score} de ${G.length}</span>`;play(score>=6?"win":"try");
+      say(a,"w","",score>=6?"<b>¡Lo tienes!</b> Ya distingues los dos modos de valer.":"<b>Buen intento.</b> Repasa la prueba de la resta y vuelve a jugar.");
+      nx.textContent="Jugar otra vez";nx.dataset.done="1"};
     show();
   }},
 /* 9 */ {name:"El «depende»",min:2,html:`
-  <span class="kicker">Paso 9 · La crítica</span>
+  <span class="kicker">Paso 10 · La crítica</span>
   <h2>¿Y si el valor <span class="d">depende</span>?</h2>
   <p>Mueve el control: el mismo pan, tres situaciones.</p>
+  <div class="bread"><div class="sq">${px("pan","l")}</div><div class="answer d" id="breadAns"></div></div>
   <input type="range" id="bread" min="0" max="2" step="1" value="0" aria-label="Situación del pan">
   <div class="ticks"><span>Estás lleno</span><span>Hay hambruna</span><span>Lo compartes</span></div>
-  <div class="answer d" id="breadAns"></div>
   <div><div class="axis"><div class="pin" id="breadPin"></div></div><div class="axis-ends"><span>utilidad</span><span>asombro</span></div></div>
-  <p class="big">Scheler diría que la escala no cambia, solo nuestro <b>ethos</b>. Sus críticos dicen otra cosa:</p>
+  <p class="big">Scheler diría que la escala no cambia, solo nuestro <b>ethos</b>. Sus críticos responden:</p>
   <div class="critics">
-    <div class="critic"><b>Korn</b>Solo hay valoraciones históricas: cada época decide su escala.</div>
-    <div class="critic"><b>Caso</b>Sin sociedad, el valor se apaga: son valencias sociales.</div>
-    <div class="critic"><b>Frondizi</b>El valor nace de sujeto + objeto + situación.</div>
-    <div class="critic"><b>Bueno</b>Los valores existen dentro de instituciones concretas.</div>
+    <div class="critic"><b>Korn</b>Cada época decide su escala.</div>
+    <div class="critic"><b>Caso</b>Sin sociedad, el valor se apaga.</div>
+    <div class="critic"><b>Frondizi</b>Valor = sujeto + objeto + situación.</div>
+    <div class="critic"><b>Bueno</b>Los valores viven en instituciones.</div>
   </div>
-  <div class="tip">Pregunta mejorada: no solo «¿medio o fin?», sino <b>«¿medio o fin aquí, para quién?»</b></div>`,
+  <div class="tip">Pregunta mejorada: <b>«¿medio o fin aquí, para quién?»</b></div>`,
   init(){
-    const S=[["Agradable · instrumental","Un bocado más. Confort sensorial, valor pequeño y prestado.",12],
-             ["Vital · casi absoluto","Ahora es subsistencia. Sube de escalón: lo vital.",45],
-             ["Ético · autotélico","Compartirlo encarna la solidaridad: un valor que vale por sí mismo.",85]];
-    const r=$("#bread"),a=$("#breadAns"),p=$("#breadPin");
-    const set=()=>{const s=S[+r.value];a.innerHTML=`<b>${s[0]}.</b> ${s[1]}`;p.style.left=s[2]+"%"};r.oninput=set;set();
+    const S=[["pan","Agradable · instrumental","Un bocado más: confort pequeño y prestado.",12],
+             ["plato","Vital · casi absoluto","Ahora es subsistencia. Sube de escalón.",45],
+             ["pan_compartido","Ético · autotélico","Compartirlo encarna la solidaridad.",85]];
+    const r=$("#bread"),a=$("#breadAns"),p=$("#breadPin"),cv=document.querySelector(".bread canvas");
+    const set=(quiet)=>{const s=S[+r.value];if(!quiet)play(+r.value===2?"sparkle":"tick");setPx(cv,s[0]);a.innerHTML=`<div><b>${s[1]}.</b> ${s[2]}</div>`;p.style.left=s[3]+"%"};
+    r.oninput=()=>set();set(true);
   }},
 /* 10 */ {name:"Resumen",min:2,html:`
-  <span class="kicker">Paso 10 · Lo esencial</span>
+  <span class="kicker">Paso 11 · Lo esencial</span>
   <h2>Seis ideas para <span class="w">llevarte</span></h2>
-  <ol class="recap">
-    <li>Las cosas valen <b>para</b> algo (útil) o <b>por</b> sí mismas (autotélico).</li>
-    <li>El objeto es el <b>portador</b>; el valor es la cualidad.</li>
-    <li>Prueba de la resta: quita el fin; si no queda nada, era útil.</li>
-    <li>Lo útil está en la base de la escalera de Scheler: su valor es prestado.</li>
-    <li>Con Hartmann, lo útil sostiene a lo alto: no son enemigos.</li>
-    <li>Pasar de la utilidad al asombro es cambiar la mirada, y el contexto puede mover la frontera.</li>
-  </ol>
+  <ul class="recap">
+    <li>${px("autotelico","s")}<span>Un valor es lo que hace que algo no te dé igual.</span></li>
+    <li>${px("util","s")}<span>Las cosas valen <b>para</b> algo (útil) o <b>por</b> sí mismas (autotélico).</span></li>
+    <li>${px("portador","s")}<span>El objeto es el <b>portador</b>; el valor es la cualidad.</span></li>
+    <li>${px("lupa","s")}<span>Prueba de la resta: quita el fin; si no queda nada, era útil.</span></li>
+    <li>${px("torre","s")}<span>Lo útil está en la base y sostiene a lo alto.</span></li>
+    <li>${px("depende","s")}<span>Pasar al asombro es cambiar la mirada, y el contexto puede mover la frontera.</span></li>
+  </ul>
   <p><b>Vocabulario.</b> Toca una palabra:</p>
   <div class="chips" id="gloss"></div>
-  <div class="answer gloss-def" id="glossDef">Elige una palabra de arriba.</div>
-  <details><summary>Fuentes del cuaderno (15)</summary>
+  <div class="answer gloss-def" id="glossDef"><div>Elige una palabra.</div></div>
+  <details><summary>${px("lupa","xs")}Fuentes del cuaderno (15)</summary>
     <ol class="sources">
       <li>Axiología (presentación) · Slideshare</li><li>El hombre y los valores en la filosofía latinoamericana del siglo XX</li>
       <li>El valor de la Axiología: crítica a la Idea de Valor</li><li>Scheler and Zambrano: on a transformation of the heart in Spanish philosophy (2 versiones)</li>
@@ -423,37 +660,58 @@ const STEPS=[
       <li>Pilares de los valores (tus apuntes)</li><li>The Philosophy of Nicolai Hartmann</li>
     </ol>
     <p>Las síntesis vienen de las respuestas de tu cuaderno; verifica las atribuciones en los textos antes de citarlas.</p>
+  </details>
+  <details><summary>${px("musica","xs")}Caja de sonidos y créditos</summary>
+    <p>Toca para escuchar cada efecto de la lección.</p>
+    <div class="sfx-row" id="sfxBox"></div>
+    <p>Sonidos sintetizados en tu navegador con <b>ZzFX</b> de Frank Force (licencia MIT). Iconos pixel art propios de esta lección.</p>
   </details>`,
   init(){
     const W=[["Wertträger","Portador de valor: la cosa, acto o persona donde se encarna un valor."],
              ["Selbstwert","Valor propio o intrínseco: vale por sí mismo."],
              ["Folgewert","Valor consecutivo: técnico, útil o simbólico; vale por otro."],
              ["Wertfühlen","Sentir los valores: captarlos con la afectividad, sin calcular."],
-             ["Vorziehen","Preferir: el acto en que notas que un valor es más alto que otro."],
+             ["Vorziehen","Preferir: notar que un valor es más alto que otro."],
              ["Ethos","El mapa de preferencias de una persona, grupo o época."],
              ["Ehrfurcht","Reverencia: el respeto que deja ser a las cosas."],
              ["Autotélico","Con su fin en sí mismo (autós + telos)."]];
+    const SB=[["Moneda","ok"],["Racha","streak"],["Fallo","bad"],["Nueva carta","card"],["Victoria","win"],["Romper","shatter"],["Reconstruir","rebuild"],
+      ["Tarjeta","flip"],["Desbloqueo","unlock"],["Hacha","chop"],["Pájaros","birds"],["Lo útil","r_util"],["Agradable","r_agradable"],["Vital","r_vital"],
+      ["Espiritual","r_espiritual"],["Lo santo","r_santo"],["Golpe útil","thud"],["Destello","sparkle"],["Lección completa","finish"]];
+    const sb=$("#sfxBox");SB.forEach(([l,k])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.onclick=()=>{if(!SND.on){SND.on=true;save("sonido",true);sndUI()}play(k)};sb.appendChild(b)});
     const box=$("#gloss"),d=$("#glossDef");
-    W.forEach(([t,def])=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed","false");
-      b.onclick=()=>{box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");d.className="answer w";d.innerHTML=`<b>${t}.</b> ${def}`};box.appendChild(b)});
+    W.forEach(([t,def],wi)=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed","false");
+      b.onclick=()=>{zzOn(()=>zz(nt(PENTA[wi+2],.09,3,.18)));box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");say(d,"w","",`<b>${t}.</b> ${def}`)};box.appendChild(b)});
   }}
 ];
 
-function go(n){
-  step=Math.max(0,Math.min(STEPS.length-1,n));visited.add(step);save("paso",step);
+function advance(){play("next");const n=step+1;
+  if(n===STEPS.length-1&&!load("terminado",false)){save("terminado",true);setTimeout(()=>play("finish"),120)}else play("levelUp",n);
+  go(n,true)}
+function go(n,dir){
+  const prev=step;step=Math.max(0,Math.min(STEPS.length-1,n));visited.add(step);save("paso2",step);
   const s=STEPS[step];
   stage.innerHTML=s.html+`<div class="nav"><button class="btn ghost" id="prev" ${step===0?"disabled":""}>← Atrás</button><button class="btn" id="next">${step===STEPS.length-1?"Volver al inicio":"Siguiente →"}</button></div>`;
-  s.init();
-  $("#prev").onclick=()=>go(step-1);
-  $("#next").onclick=()=>go(step===STEPS.length-1?0:step+1);
+  paintAll(stage);s.init();
+  stage.classList.remove("in-next","in-back");void stage.offsetWidth;
+  if(dir!==undefined)stage.classList.add((dir??(step>=prev))?"in-next":"in-back");
+  $("#prev").onclick=()=>{play("back");go(step-1,false)};
+  $("#next").onclick=()=>{if(step===STEPS.length-1){play("pick");go(0,true)}else{advance()}};
   dotsEl.innerHTML="";
   STEPS.forEach((t,i)=>{const b=document.createElement("button");b.className=i===step?"now":(visited.has(i)?"done":"");
-    b.setAttribute("aria-label",`Paso ${i+1}: ${t.name}`);if(i===step)b.setAttribute("aria-current","step");b.onclick=()=>go(i);dotsEl.appendChild(b)});
-  countEl.textContent=`${step+1}/${STEPS.length} · ~${s.min} min`;
+    b.setAttribute("aria-label",`Paso ${i+1}: ${t.name}`);if(i===step)b.setAttribute("aria-current","step");
+    b.onclick=()=>{if(i===step)return;play(i>step?"next":"back");if(i>step)play("levelUp",i);go(i,i>step)};dotsEl.appendChild(b)});
+  countEl.innerHTML=`${step+1}/${STEPS.length}<span class="mins"> · ~${s.min} min</span>`;
   window.scrollTo({top:0});
 }
-document.addEventListener("keydown",e=>{if(e.target.matches("input,textarea"))return;if(e.key==="ArrowRight")go(step+1);if(e.key==="ArrowLeft")go(step-1)});
-const saved=load("paso",0);for(let i=0;i<=saved;i++)visited.add(i);
+document.addEventListener("keydown",e=>{if(e.target.matches("input,textarea"))return;
+  if(e.key==="ArrowRight"&&step<STEPS.length-1){advance()}
+  if(e.key==="ArrowLeft"&&step>0){play("back");go(step-1,false)}});
+function onTheme(){paintAll()}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",onTheme);
+new MutationObserver(onTheme).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+const saved=load("paso2",0);for(let i=0;i<=saved;i++)visited.add(i);
+paintAll(document.querySelector(".top"));
 go(typeof saved==="number"?saved:0);
 </script>
 </body>
